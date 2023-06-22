@@ -8,6 +8,8 @@ import { SocialLoginRequest } from './dto/social-login-request';
 import { SignupRequiredResponse } from './dto/signup-required-response';
 import { S3PreSignUrlRequestDto } from './dto/s3-pre-sign-url-request';
 import {
+  ApiExtraModels,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
@@ -34,12 +36,12 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: '소셜 로그인(Google, Github, Kakao)' })
+  @ApiExtraModels(LoginSuccessResponse, SignupRequiredResponse)
   @ApiOkResponse({
     description: '로그인 성공 or 회원가입 필요',
     schema: {
-      oneOf: [{ $ref: getSchemaPath(LoginSuccessResponse) }, { $ref: getSchemaPath(SignupRequiredResponse) }],
+      anyOf: refs(LoginSuccessResponse, SignupRequiredResponse),
     },
-    //schema: { anyOf: refs(LoginSuccessResponse, SignupRequiredResponse) },
   })
   async login(
     @Body() dto: SocialLoginRequest,
@@ -58,12 +60,15 @@ export class AuthController {
     return loginResult;
   }
 
+  @ApiOperation({ summary: '로그아웃' })
+  @ApiNoContentResponse()
   @Post('logout')
   @HttpCode(204)
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('R_AUTH');
   }
 
+  @ApiOperation({ summary: 'S3 Pre-Signed URL 발급' })
   @Get('s3/pre-sign-url')
   async getS3PreSignUrl(@Query() dto: S3PreSignUrlRequestDto) {
     const { fileName } = dto;

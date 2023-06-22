@@ -10,6 +10,7 @@ export type AccessTokenPayload = {
   _id: Types.ObjectId;
   nickName: string;
   idToken: string;
+  tokenType: string;
 };
 
 @Injectable()
@@ -35,11 +36,12 @@ export class JwtService {
   verifyAccessToken(jwtString: string): AccessTokenPayload {
     try {
       const payload = jwt.verify(jwtString, process.env.AUTH_JWT_KEY) as (jwt.JwtPayload | string) & AccessTokenPayload;
-      const { _id, nickName, idToken } = payload;
+      const { _id, nickName, idToken, tokenType } = payload;
       return {
         _id,
         nickName,
         idToken,
+        tokenType,
       };
     } catch (e) {
       throw new UnauthorizedException();

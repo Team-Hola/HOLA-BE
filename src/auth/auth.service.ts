@@ -61,8 +61,8 @@ export class AuthService {
   }
 
   async getLoginSuccessResponse(user: UserPOJO): Promise<LoginSuccessResponse> {
-    const { _id, idToken, nickName, image, likeLanguages } = user;
-    const accessToken = this.jwtService.createAccessToken({ _id, nickName, idToken });
+    const { _id, idToken, tokenType, nickName, image, likeLanguages } = user;
+    const accessToken = this.jwtService.createAccessToken({ _id, nickName, idToken, tokenType });
     const refreshToken = this.jwtService.createRefreshToken({ nickName });
     return {
       loginSuccess: true,

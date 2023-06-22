@@ -1,11 +1,10 @@
 import { PostCreateRequest } from './dto/post-create-request';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FlattenMaps, Model, Types } from 'mongoose';
-import { PostMainListResponse } from './dto/post-main-list-response';
+import { PostMainFindResult, PostMainListResponse } from './dto/post-main-list-response';
 import { PostRecommendedListResponse } from './dto/post-recommended-list-response';
 import { Post } from './schema/post.schema';
-import { PostMainFindResult } from './types/post-main-find-result';
 import { PostUpdateRequest } from './dto/post-update-request';
 
 export type PostPOJO = FlattenMaps<Post>;
@@ -295,5 +294,47 @@ export class PostsRepository {
     const likeUsers = await this.postModel.findById(postId).select('likes');
     if (!likeUsers) return [];
     return likeUsers.likes;
+  }
+
+  async findCommentList(postId: Types.ObjectId) {
+    const result = await this.postModel.findById(postId).populate('comments.author', 'nickName image');
+    return result.comments;
+  }
+
+  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId) {
+    const commentId = new Types.ObjectId();
+    const post = await this.postModel.findOneAndUpdate(
+      { _id: postId },
+      { $push: { comments: { _id: commentId, content, author } } },
+      { new: true, upsert: true },
+    );
+    //return { post, commentId };
+  }
+
+  async updateComment(commentId: Types.ObjectId, content: string) {
+    const comment = await this.postModel.findOneAndUpdate(
+      { comments: { $elemMatch: { commentId } } },
+      { $set: { 'comments.$.content': content } },
+      { new: true },
+    );
+    //return comment;
+  }
+
+  async deleteComment(commentId: Types.ObjectId) {
+    const comment = await this.postModel.findOneAndUpdate(
+      { comments: { $elemMatch: { _id: commentId } } },
+      { $pull: { comments: { _id: commentId } } },
+    );
+    //return comment;
+  }
+
+  // 수정 권한 체크
+  async checkCommentAuthorization(commentId: Types.ObjectId, tokenUserId: Types.ObjectId, tokenType: string) {
+    if (tokenType !== 'admin') {
+      const post = await this.postModel.findOne({ comments: { $elemMatch: { _id: commentId, author: tokenUserId } } });
+      if (!post) {
+        throw new UnauthorizedException();
+      }
+    }
   }
 }

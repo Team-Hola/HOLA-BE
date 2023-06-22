@@ -85,6 +85,10 @@ export class Post {
   @Prop({ type: Number, default: 0 })
   views: number;
 
+  @ApiProperty({
+    type: [Comment],
+    description: '댓글',
+  })
   @Prop({ type: [CommentSchema] })
   comments: Comment[];
 

@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 import { PostCreateRequest } from './dto/post-create-request';
 import { GetAuthUserGuard } from '../auth/guard/get-auth-user.guard';
 import { PostsService } from './posts.service';
@@ -19,12 +21,17 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiOperation,
-  ApiQuery,
   ApiBearerAuth,
   ApiNotFoundResponse,
   ApiBody,
+  ApiCreatedResponse,
   ApiNoContentResponse,
 } from '@nestjs/swagger';
+import { Post as PostSchema } from 'src/posts/schema/post.schema';
+import { LikeUserGetResponse } from './dto/like-user-get-response';
+import { CommentListResponse } from './dto/comment-list-response';
+import { CommentCreateRequest } from './dto/comment-create-request';
+import { CommentUpdateRequest } from './dto/comment-update-request';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -32,12 +39,18 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @ApiOperation({ summary: '이번주 인기글 조회' })
+  @ApiOkResponse({
+    type: [PostTopListResponse],
+  })
   @Get('top')
   async getPostTopList(): Promise<PostTopListResponse[]> {
     return await this.postsService.getPostTopList();
   }
 
   @ApiOperation({ summary: '모집 메인 조회(페이지네이션)' })
+  @ApiOkResponse({
+    type: [PostMainListResponse],
+  })
   @Get('pagination')
   @UseGuards(GetAuthUserGuard)
   async getPostList(
@@ -49,6 +62,13 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '페이지네이션 마지막 페이지 조회' })
+  @ApiBody({
+    schema: {
+      properties: {
+        lastPage: { type: 'numer', example: 15, description: '마지막 페이지' },
+      },
+    },
+  })
   @Get('pagination/last-page')
   async getPostLastPage(@Query() dto: PostMainGetCondition) {
     const lastPage = await this.postsService.getMainLastPage(dto);
@@ -58,6 +78,10 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '모집글 상세 조회' })
+  @ApiOkResponse({
+    type: PostDetailResponse,
+  })
+  @ApiNotFoundResponse()
   @Get(':id')
   @UseGuards(GetAuthUserGuard)
   async getPost(
@@ -69,6 +93,9 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '모집 추천글 조회' })
+  @ApiOkResponse({
+    type: [PostRecommendedListResponse],
+  })
   @Get(':id/recommended')
   @UseGuards(GetAuthUserGuard)
   async getRecommendedPostList(
@@ -80,6 +107,8 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '모집 글 등록' })
+  @ApiCreatedResponse({ type: PostSchema })
+  @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
   @Post()
   @HttpCode(201)
@@ -90,6 +119,10 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '모집 글 수정' })
+  @ApiOkResponse({
+    type: PostSchema,
+  })
+  @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
   @Patch(':id')
   async updatePost(@Param('id', ParseObjectIdPipe) id: Types.ObjectId, @Body() dto: PostUpdateRequest) {
@@ -97,6 +130,10 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '관심 등록(좋아요)' })
+  @ApiCreatedResponse({
+    type: LikeUserGetResponse,
+  })
+  @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
   @Post('likes')
   @HttpCode(201)
@@ -111,9 +148,13 @@ export class PostsController {
   }
 
   @ApiOperation({ summary: '관심 등록 취소(좋아요)' })
+  @ApiOkResponse({
+    type: LikeUserGetResponse,
+  })
+  @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
   @Delete('likes/:id')
-  @HttpCode(204)
+  @HttpCode(200)
   async deleteLike(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId, @Req() request: Request) {
     const user: AccessTokenPayload = request['user'];
     const userId = user._id;
@@ -123,7 +164,10 @@ export class PostsController {
     };
   }
 
-  @ApiOperation({ summary: '관심 등록한 사용자 리스트' })
+  @ApiOperation({ summary: '관심 등록한 사용자 리스트 조회' })
+  @ApiOkResponse({
+    type: LikeUserGetResponse,
+  })
   @Get(':id/likes')
   @UseGuards(GetAuthUserGuard)
   async getLikeUserList(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
@@ -132,4 +176,49 @@ export class PostsController {
       likeUsers: likes,
     };
   }
+
+  @ApiOperation({ summary: '댓글 리스트 조회' })
+  @ApiOkResponse({
+    type: CommentListResponse,
+  })
+  @Get('comments/:id')
+  @UseGuards(GetAuthUserGuard)
+  async getCommentList(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
+    const comments = await this.postsService.getCommentList(postId);
+    return {
+      comments,
+    };
+  }
+
+  @ApiOperation({ summary: '댓글 등록' })
+  @ApiNoContentResponse()
+  @ApiBearerAuth()
+  @UseGuards(AuthenticationGuard)
+  @Post('comments')
+  @HttpCode(201)
+  async createComment(@Req() request: Request, @Body() dto: CommentCreateRequest) {
+    const user: AccessTokenPayload = request['user'];
+    const userId = user._id;
+    const { postId, content } = dto;
+    return await this.postsService.createComment(postId, content, userId);
+  }
+
+  @ApiOperation({ summary: '댓글 수정' })
+  @ApiNoContentResponse()
+  @ApiBearerAuth()
+  @UseGuards(AuthenticationGuard)
+  @Patch('comments/:id')
+  async updateComment(
+    @Req() request: Request,
+    @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId,
+    @Body() dto: CommentUpdateRequest,
+  ) {
+    const user: AccessTokenPayload = request['user'];
+    const { _id: userId, tokenType } = user;
+    const { content } = dto;
+    return this.postsService.updateComment(commentId, content, userId, tokenType);
+  }
+
+  // 댓글 삭제
+  // 204
 }

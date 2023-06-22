@@ -1,16 +1,14 @@
 import { LikePostsService } from './../like-posts/like-posts.service';
 import sanitizeHtml from 'sanitize-html';
-
 import { ReadPostsService } from './../read-posts/read-posts.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { PostDetailResponse } from './dto/post-detail-response';
 import { PostMainGetCondition } from './dto/post-main-get-condition';
-import { PostBadge, PostBadgeType, PostMainListResponse } from './dto/post-main-list-response';
+import { PostBadge, PostBadgeType, PostMainFindResult, PostMainListResponse } from './dto/post-main-list-response';
 import { PostRecommendedListResponse } from './dto/post-recommended-list-response';
 import { PostTopListResponse } from './dto/post-top-list-response';
 import { PostPOJO, PostsRepository } from './posts.repository';
-import { PostMainFindResult } from './types/post-main-find-result';
 import { PostCreateRequest } from './dto/post-create-request';
 import { PostUpdateRequest } from './dto/post-update-request';
 
@@ -234,5 +232,22 @@ export class PostsService {
 
   async getLikedUserList(postId: Types.ObjectId) {
     return this.postsRepository.findLikedUsers(postId);
+  }
+
+  async getCommentList(postId: Types.ObjectId) {
+    return this.postsRepository.findCommentList(postId);
+  }
+
+  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId) {
+    await this.postsRepository.createComment(postId, content, author);
+  }
+
+  async updateComment(commentId: Types.ObjectId, content: string, userId: Types.ObjectId, tokenType: string) {
+    await this.postsRepository.checkCommentAuthorization(commentId, userId, tokenType);
+    await this.postsRepository.updateComment(commentId, content);
+  }
+
+  async deleteComment(commentId: Types.ObjectId) {
+    await this.postsRepository.deleteComment(commentId);
   }
 }

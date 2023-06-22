@@ -15,6 +15,7 @@ export class Comment {
 
   @ApiProperty({
     description: '댓글 내용',
+    example: '참여하고 싶습니다.',
   })
   @Prop({ type: String, required: true })
   content: string;

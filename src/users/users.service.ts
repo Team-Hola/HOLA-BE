@@ -23,8 +23,8 @@ export class UsersService {
   ) {}
 
   async getUserSignUpResponse(user: UserPOJO): Promise<SignupSuccessResponse> {
-    const { _id, idToken, nickName, image } = user;
-    const accessToken = this.jwtService.createAccessToken({ _id, nickName, idToken });
+    const { _id, idToken, tokenType, nickName, image } = user;
+    const accessToken = this.jwtService.createAccessToken({ _id, nickName, idToken, tokenType });
     const refreshToken = this.jwtService.createRefreshToken({ nickName });
     return {
       _id,

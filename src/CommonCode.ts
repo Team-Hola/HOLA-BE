@@ -1,4 +1,4 @@
-// // 프로젝트/스터디
+// 프로젝트/스터디
 export const PostTypeCode = {
   1: '1',
   2: '2',

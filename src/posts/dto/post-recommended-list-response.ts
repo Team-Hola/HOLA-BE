@@ -1,3 +1,4 @@
-import { PostPOJO } from '../posts.repository';
+import { PickType } from '@nestjs/swagger';
+import { Post } from '../schema/post.schema';
 
-export type PostRecommendedListResponse = Pick<PostPOJO, '_id' | 'title'>;
+export class PostRecommendedListResponse extends PickType(Post, ['_id', 'title'] as const) {}
