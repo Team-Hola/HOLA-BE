@@ -44,7 +44,7 @@ export class JwtService {
         tokenType,
       };
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(`Invalid access token`);
     }
   }
 
@@ -57,7 +57,7 @@ export class JwtService {
         nickName,
       };
     } catch (e) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(`Invalid refresh token`);
     }
   }
 }

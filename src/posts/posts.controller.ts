@@ -125,8 +125,14 @@ export class PostsController {
   @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
   @Patch(':id')
-  async updatePost(@Param('id', ParseObjectIdPipe) id: Types.ObjectId, @Body() dto: PostUpdateRequest) {
-    return this.postsService.updatePost(id, dto);
+  async updatePost(
+    @Req() request: Request,
+    @Param('id', ParseObjectIdPipe) postId: Types.ObjectId,
+    @Body() dto: PostUpdateRequest,
+  ) {
+    const user: AccessTokenPayload = request['user'];
+    const { _id: userId, tokenType } = user;
+    return this.postsService.updatePost(postId, dto, userId, tokenType);
   }
 
   @ApiOperation({ summary: '관심 등록(좋아요)' })
@@ -216,9 +222,18 @@ export class PostsController {
     const user: AccessTokenPayload = request['user'];
     const { _id: userId, tokenType } = user;
     const { content } = dto;
-    return this.postsService.updateComment(commentId, content, userId, tokenType);
+    return await this.postsService.updateComment(commentId, content, userId, tokenType);
   }
 
-  // 댓글 삭제
-  // 204
+  @ApiOperation({ summary: '댓글 삭제' })
+  @ApiNoContentResponse()
+  @ApiBearerAuth()
+  @UseGuards(AuthenticationGuard)
+  @Delete('comments/:id')
+  @HttpCode(200)
+  async deleteComment(@Req() request: Request, @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId) {
+    const user: AccessTokenPayload = request['user'];
+    const { _id: userId, tokenType } = user;
+    await this.postsService.deleteComment(commentId, userId, tokenType);
+  }
 }

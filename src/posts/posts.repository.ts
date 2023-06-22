@@ -328,13 +328,11 @@ export class PostsRepository {
     //return comment;
   }
 
-  // 수정 권한 체크
-  async checkCommentAuthorization(commentId: Types.ObjectId, tokenUserId: Types.ObjectId, tokenType: string) {
-    if (tokenType !== 'admin') {
-      const post = await this.postModel.findOne({ comments: { $elemMatch: { _id: commentId, author: tokenUserId } } });
-      if (!post) {
-        throw new UnauthorizedException();
-      }
-    }
+  async findPostByIdAndAuthor(postId: Types.ObjectId, tokenUserId: Types.ObjectId) {
+    return await this.postModel.findOne({ _id: postId, author: tokenUserId });
+  }
+
+  async findCommentByIdAndAuthor(commentId: Types.ObjectId, tokenUserId: Types.ObjectId) {
+    return await this.postModel.findOne({ comments: { $elemMatch: { _id: commentId, author: tokenUserId } } });
   }
 }

@@ -12,10 +12,8 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
-  getSchemaPath,
   refs,
 } from '@nestjs/swagger';
 

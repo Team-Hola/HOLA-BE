@@ -1,7 +1,7 @@
 import { LikePostsService } from './../like-posts/like-posts.service';
 import sanitizeHtml from 'sanitize-html';
 import { ReadPostsService } from './../read-posts/read-posts.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { PostDetailResponse } from './dto/post-detail-response';
 import { PostMainGetCondition } from './dto/post-main-get-condition';
@@ -204,7 +204,9 @@ export class PostsService {
     return this.postsRepository.createPost(userId, dto);
   }
 
-  async updatePost(postId: Types.ObjectId, dto: PostUpdateRequest) {
+  async updatePost(postId: Types.ObjectId, dto: PostUpdateRequest, userId: Types.ObjectId, tokenType: string) {
+    await this.checkPostAuthorization(postId, userId, tokenType);
+
     if (dto.content) dto.content = this.getSanitizeHtml(dto.content);
     return this.postsRepository.updatePost(postId, dto);
   }
@@ -243,11 +245,34 @@ export class PostsService {
   }
 
   async updateComment(commentId: Types.ObjectId, content: string, userId: Types.ObjectId, tokenType: string) {
-    await this.postsRepository.checkCommentAuthorization(commentId, userId, tokenType);
+    await this.checkCommentAuthorization(commentId, userId, tokenType);
     await this.postsRepository.updateComment(commentId, content);
   }
 
-  async deleteComment(commentId: Types.ObjectId) {
+  async deleteComment(commentId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
+    await this.checkCommentAuthorization(commentId, userId, tokenType);
     await this.postsRepository.deleteComment(commentId);
+  }
+
+  // 글 인가 체크
+  // - 자신이 등록한 댓글만 수정 가능
+  // - admin인 경우 제외
+  async checkPostAuthorization(postId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
+    if (tokenType !== 'admin') return;
+    const post = await this.postsRepository.findPostByIdAndAuthor(postId, userId);
+    if (!post) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  // 댓글 인가 체크
+  // - 자신이 등록한 댓글만 수정 가능
+  // - admin인 경우 제외
+  async checkCommentAuthorization(commentId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
+    if (tokenType !== 'admin') return;
+    const post = await this.postsRepository.findCommentByIdAndAuthor(commentId, userId);
+    if (!post) {
+      throw new UnauthorizedException();
+    }
   }
 }
