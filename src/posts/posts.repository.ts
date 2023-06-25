@@ -1,5 +1,5 @@
 import { PostCreateRequest } from './dto/post-create-request';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FlattenMaps, Model, Types } from 'mongoose';
 import { PostMainFindResult, PostMainListResponse } from './dto/post-main-list-response';
@@ -238,6 +238,11 @@ export class PostsRepository {
       new: true,
     });
   }
+
+  async deletePost(postId: Types.ObjectId) {
+    await this.postModel.findOneAndUpdate({ _id: postId }, { isDeleted: true, deleteDate: new Date() });
+  }
+
   async addLike(postId: Types.ObjectId, userId: Types.ObjectId) {
     const post: PostPOJO[] = await this.postModel.find({ _id: postId, likes: { $in: [userId] } }).lean();
     const isLikeExist = post.length > 0;
@@ -334,5 +339,18 @@ export class PostsRepository {
 
   async findCommentByIdAndAuthor(commentId: Types.ObjectId, tokenUserId: Types.ObjectId) {
     return await this.postModel.findOne({ comments: { $elemMatch: { _id: commentId, author: tokenUserId } } });
+  }
+
+  // 회원 탈퇴 시 사용자가 작성한 글 제거
+  async deletePostByAuthor(userId: Types.ObjectId) {
+    await this.postModel.deleteMany({ author: userId });
+  }
+
+  // 회원 탈퇴 시 사용자가 작성한 댓글 제거
+  async deleteCommentByAuthor(userId: Types.ObjectId) {
+    await this.postModel.findOneAndUpdate(
+      { comments: { $elemMatch: { author: userId } } },
+      { $pull: { comments: { author: userId } } },
+    );
   }
 }

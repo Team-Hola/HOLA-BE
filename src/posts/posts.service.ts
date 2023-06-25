@@ -210,6 +210,12 @@ export class PostsService {
     if (dto.content) dto.content = this.getSanitizeHtml(dto.content);
     return this.postsRepository.updatePost(postId, dto);
   }
+
+  async deletePost(postId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
+    await this.checkPostAuthorization(postId, userId, tokenType);
+    await this.postsRepository.deletePost(postId);
+  }
+
   getSanitizeHtml(content: string): string {
     return sanitizeHtml(content, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
@@ -274,5 +280,15 @@ export class PostsService {
     if (!post) {
       throw new UnauthorizedException();
     }
+  }
+
+  // 회원 탈퇴 시 사용자가 작성한 글 제거
+  async deletePostBySignOutUser(userId: Types.ObjectId) {
+    await this.postsRepository.deletePostByAuthor(userId);
+  }
+
+  // 회원 탈퇴 시 사용자가 작성한 댓글 제거
+  async deleteCommentBySignOutUser(userId: Types.ObjectId) {
+    await this.postsRepository.deleteCommentByAuthor(userId);
   }
 }

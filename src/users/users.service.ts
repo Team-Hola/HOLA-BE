@@ -1,8 +1,5 @@
 import { JwtService } from './../jwt/jwt.service';
-import { LoginSuccessResponse } from './../auth/dto/login-success-response';
-import { AuthService } from 'src/auth/auth.service';
 import { UserPOJO, UsersRepository } from './users.repository';
-import { User } from './../users/schema/user.schema';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { SignupSuccessResponse } from './dto/signup-success-response';
@@ -58,6 +55,10 @@ export class UsersService {
 
   async deleteUser(id: Types.ObjectId) {
     const user = await this.getUserById(id);
+    if (!user) throw new BadRequestException('User not found');
+
+    await this.postsService.deletePostBySignOutUser(id); // 사용자가 작성한 글 제거
+    await this.postsService.deleteCommentBySignOutUser(id); // 사용자가 작성한 댓글 제거
     const { idToken, tokenType, nickName, createdAt, _id } = user;
     await this.usersRepository.createSignOutUser(idToken, tokenType, nickName, createdAt, _id); // 탈퇴 이력 생성
     await this.usersRepository.findByIdAndDelete(id);

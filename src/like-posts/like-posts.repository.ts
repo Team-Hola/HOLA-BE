@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FlattenMaps, Model, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { LikePost } from './schema/like-post.schema';
 
 @Injectable()

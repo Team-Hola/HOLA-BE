@@ -106,7 +106,7 @@ export class PostsController {
     return await this.postsService.getRecommendedPostList(id, userId);
   }
 
-  @ApiOperation({ summary: '모집 글 등록' })
+  @ApiOperation({ summary: '글 등록' })
   @ApiCreatedResponse({ type: PostSchema })
   @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
@@ -118,7 +118,7 @@ export class PostsController {
     return this.postsService.createPost(userId, dto);
   }
 
-  @ApiOperation({ summary: '모집 글 수정' })
+  @ApiOperation({ summary: '글 수정' })
   @ApiOkResponse({
     type: PostSchema,
   })
@@ -133,6 +133,18 @@ export class PostsController {
     const user: AccessTokenPayload = request['user'];
     const { _id: userId, tokenType } = user;
     return this.postsService.updatePost(postId, dto, userId, tokenType);
+  }
+
+  @ApiOperation({ summary: '글 삭제' })
+  @ApiNoContentResponse()
+  @ApiBearerAuth()
+  @UseGuards(AuthenticationGuard)
+  @Delete('posts/:id')
+  @HttpCode(200)
+  async deletePost(@Req() request: Request, @Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
+    const user: AccessTokenPayload = request['user'];
+    const { _id: userId, tokenType } = user;
+    await this.postsService.deletePost(postId, userId, tokenType);
   }
 
   @ApiOperation({ summary: '관심 등록(좋아요)' })

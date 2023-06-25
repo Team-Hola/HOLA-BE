@@ -1,6 +1,5 @@
 import { AccessTokenPayload, JwtService } from 'src/jwt/jwt.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { Request } from 'express';
 
 // - Access token 유효성 체크

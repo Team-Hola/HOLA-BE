@@ -1,4 +1,3 @@
-import { Post } from '../../posts/schema/post.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 

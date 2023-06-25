@@ -1,13 +1,10 @@
 import { UserPOJO } from './../users/users.repository';
 import { JwtService } from './../jwt/jwt.service';
 import { UsersService } from './../users/users.service';
-import * as jwt from 'jsonwebtoken';
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginSuccessResponse } from './dto/login-success-response';
-import { Types } from 'mongoose';
 import { LoginService, OauthGetResponse } from 'src/login/login.service';
 import { SignupRequiredResponse } from './dto/signup-required-response';
-import { User } from 'src/users/schema/user.schema';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 

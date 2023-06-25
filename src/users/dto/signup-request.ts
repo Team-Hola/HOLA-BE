@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsArray, IsString, Max, MaxLength } from 'class-validator';
+import { IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { toMongoObjectId } from 'src/common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';

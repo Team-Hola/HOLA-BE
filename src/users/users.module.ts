@@ -1,10 +1,9 @@
 import { SignOutUser, SignOutUserSchema } from './schema/signOutUser.schema';
 import { JwtModule } from './../jwt/jwt.module';
 import { UsersController } from './../users/users.controller';
-import { AuthModule } from './../auth/auth.module';
 import { User, UserSchema } from './../users/schema/user.schema';
 import { UsersRepository } from './users.repository';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LikePostsModule } from 'src/like-posts/like-posts.module';

@@ -1,5 +1,4 @@
-import { UsersService } from './../users/users.service';
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
 import axios from 'axios';
 

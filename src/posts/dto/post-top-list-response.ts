@@ -1,5 +1,4 @@
 import { ApiProperty, IntersectionType, PickType } from '@nestjs/swagger';
-import { PostPOJO } from '../posts.repository';
 import { Post } from '../schema/post.schema';
 import { PostBadge } from './post-main-list-response';
 
