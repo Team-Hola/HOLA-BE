@@ -105,9 +105,8 @@ export class User {
     description: '직군(프론트엔드, 백엔드, 디자인)',
     example: 'FE',
     required: false,
-    default: '',
   })
-  @Prop()
+  @Prop({ type: String, default: '' })
   @IsString()
   @IsOptional()
   position: string;
@@ -116,9 +115,8 @@ export class User {
     description: '간단 자기소개',
     example: '안녕하세요.',
     required: false,
-    default: '',
   })
-  @Prop()
+  @Prop({ type: String, default: '' })
   @IsString()
   @IsOptional()
   introduce: string;
@@ -127,9 +125,8 @@ export class User {
     description: '경력(학생, 1년, 2년, 3년)',
     example: '2',
     required: false,
-    default: '',
   })
-  @Prop()
+  @Prop({ type: String, default: '' })
   @IsString()
   @IsOptional()
   workExperience: string;
@@ -138,9 +135,8 @@ export class User {
     description: '소속 명',
     example: '도미노피자',
     required: false,
-    default: '',
   })
-  @Prop()
+  @Prop({ type: String, default: '' })
   @IsString()
   @IsOptional()
   organizationName: string;

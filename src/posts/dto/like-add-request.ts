@@ -2,6 +2,7 @@ import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
 import { toMongoObjectId } from 'src/common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class LikeAddRequest {
   @ApiProperty({
@@ -10,5 +11,6 @@ export class LikeAddRequest {
     required: true,
   })
   @Transform(toMongoObjectId)
+  @IsNotEmpty()
   postId: Types.ObjectId;
 }

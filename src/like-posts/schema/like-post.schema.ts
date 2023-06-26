@@ -7,7 +7,7 @@ export type LikePostDocument = HydratedDocument<LikePost>;
 export class LikePost {
   _id: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Post', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Post', required: true })

@@ -8,9 +8,4 @@ export class AppController {
   home() {
     return `welceom home!`;
   }
-
-  @Get('/db-host-from-config')
-  getDatabaseHostFromConfigService(): string {
-    return this.configService.get('DATABASE_HOST');
-  }
 }

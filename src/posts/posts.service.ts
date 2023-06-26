@@ -201,7 +201,7 @@ export class PostsService {
 
   async createPost(userId: Types.ObjectId, dto: PostCreateRequest) {
     dto.content = this.getSanitizeHtml(dto.content);
-    return this.postsRepository.createPost(userId, dto);
+    return await this.postsRepository.createPost(userId, dto);
   }
 
   async updatePost(postId: Types.ObjectId, dto: PostUpdateRequest, userId: Types.ObjectId, tokenType: string) {
@@ -264,7 +264,7 @@ export class PostsService {
   // - 자신이 등록한 댓글만 수정 가능
   // - admin인 경우 제외
   async checkPostAuthorization(postId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
-    if (tokenType !== 'admin') return;
+    if (tokenType === 'admin') return;
     const post = await this.postsRepository.findPostByIdAndAuthor(postId, userId);
     if (!post) {
       throw new UnauthorizedException();
@@ -275,7 +275,7 @@ export class PostsService {
   // - 자신이 등록한 댓글만 수정 가능
   // - admin인 경우 제외
   async checkCommentAuthorization(commentId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
-    if (tokenType !== 'admin') return;
+    if (tokenType === 'admin') return;
     const post = await this.postsRepository.findCommentByIdAndAuthor(commentId, userId);
     if (!post) {
       throw new UnauthorizedException();

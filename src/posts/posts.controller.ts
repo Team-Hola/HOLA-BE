@@ -52,6 +52,7 @@ export class PostsController {
   @ApiOkResponse({
     type: [PostMainListResponse],
   })
+  @ApiBearerAuth()
   @Get('pagination')
   @UseGuards(GetAuthUserGuard)
   async getPostList(
@@ -82,6 +83,7 @@ export class PostsController {
     type: PostDetailResponse,
   })
   @ApiNotFoundResponse()
+  @ApiBearerAuth()
   @Get(':id')
   @UseGuards(GetAuthUserGuard)
   async getPost(
@@ -95,6 +97,7 @@ export class PostsController {
   @ApiOkResponse({
     type: [PostRecommendedListResponse],
   })
+  @ApiBearerAuth()
   @Get(':id/recommended')
   @UseGuards(GetAuthUserGuard)
   async getRecommendedPostList(
@@ -110,10 +113,8 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Post()
   @HttpCode(201)
-  async createPost(@Req() request: Request, @Body() dto: PostCreateRequest) {
-    const user: AccessTokenPayload = request['user'];
-    const userId = user._id;
-    return this.postsService.createPost(userId, dto);
+  async createPost(@User('_id') userId: string, @Body() dto: PostCreateRequest) {
+    return this.postsService.createPost(new Types.ObjectId(userId), dto);
   }
 
   @ApiOperation({ summary: '글 수정' })
@@ -124,13 +125,12 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Patch(':id')
   async updatePost(
-    @Req() request: Request,
+    @User('_id') userId: string,
+    @User('tokenType') tokenType: string,
     @Param('id', ParseObjectIdPipe) postId: Types.ObjectId,
     @Body() dto: PostUpdateRequest,
   ) {
-    const user: AccessTokenPayload = request['user'];
-    const { _id: userId, tokenType } = user;
-    return this.postsService.updatePost(postId, dto, userId, tokenType);
+    return this.postsService.updatePost(postId, dto, new Types.ObjectId(userId), tokenType);
   }
 
   @ApiOperation({ summary: '글 삭제' })
@@ -139,10 +139,12 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Delete(':id')
   @HttpCode(204)
-  async deletePost(@Req() request: Request, @Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
-    const user: AccessTokenPayload = request['user'];
-    const { _id: userId, tokenType } = user;
-    await this.postsService.deletePost(postId, userId, tokenType);
+  async deletePost(
+    @User('_id') userId: string,
+    @User('tokenType') tokenType: string,
+    @Param('id', ParseObjectIdPipe) postId: Types.ObjectId,
+  ) {
+    await this.postsService.deletePost(postId, new Types.ObjectId(userId), tokenType);
   }
 
   @ApiOperation({ summary: '관심 등록(좋아요)' })
@@ -153,11 +155,9 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Post('likes')
   @HttpCode(201)
-  async addLike(@Req() request: Request, @Body() dto: LikeAddRequest) {
-    const user: AccessTokenPayload = request['user'];
-    const userId = user._id;
+  async addLike(@User('_id') userId: string | null, @Body() dto: LikeAddRequest) {
     const { postId } = dto;
-    const likes = this.postsService.addLike(postId, userId);
+    const likes = await this.postsService.addLike(postId, new Types.ObjectId(userId));
     return {
       likeUsers: likes,
     };
@@ -171,10 +171,8 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Delete('likes/:id')
   @HttpCode(200)
-  async deleteLike(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId, @Req() request: Request) {
-    const user: AccessTokenPayload = request['user'];
-    const userId = user._id;
-    const likes = await this.postsService.deleteLike(postId, userId);
+  async deleteLike(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId, @User('_id') userId: string) {
+    const likes = await this.postsService.deleteLike(postId, new Types.ObjectId(userId));
     return {
       likeUsers: likes,
     };
@@ -210,11 +208,9 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Post('comments')
   @HttpCode(201)
-  async createComment(@Req() request: Request, @Body() dto: CommentCreateRequest) {
-    const user: AccessTokenPayload = request['user'];
-    const userId = user._id;
+  async createComment(@User('_id') userId: string, @Body() dto: CommentCreateRequest) {
     const { postId, content } = dto;
-    return await this.postsService.createComment(postId, content, userId);
+    return await this.postsService.createComment(postId, content, new Types.ObjectId(userId));
   }
 
   @ApiOperation({ summary: '댓글 수정' })
@@ -223,14 +219,13 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Patch('comments/:id')
   async updateComment(
-    @Req() request: Request,
+    @User('_id') userId: string,
+    @User('tokenType') tokenType: string,
     @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId,
     @Body() dto: CommentUpdateRequest,
   ) {
-    const user: AccessTokenPayload = request['user'];
-    const { _id: userId, tokenType } = user;
     const { content } = dto;
-    return await this.postsService.updateComment(commentId, content, userId, tokenType);
+    return await this.postsService.updateComment(commentId, content, new Types.ObjectId(userId), tokenType);
   }
 
   @ApiOperation({ summary: '댓글 삭제' })
@@ -239,9 +234,11 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Delete('comments/:id')
   @HttpCode(200)
-  async deleteComment(@Req() request: Request, @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId) {
-    const user: AccessTokenPayload = request['user'];
-    const { _id: userId, tokenType } = user;
-    await this.postsService.deleteComment(commentId, userId, tokenType);
+  async deleteComment(
+    @User('_id') userId: string,
+    @User('tokenType') tokenType: string,
+    @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId,
+  ) {
+    await this.postsService.deleteComment(commentId, new Types.ObjectId(userId), tokenType);
   }
 }
