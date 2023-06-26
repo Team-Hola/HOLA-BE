@@ -68,7 +68,7 @@ export class PostsRepository {
     if (position && position != 'ALL') query.positions = position;
     if (onOffLine && onOffLine != 'ALL') query.onlineOrOffline = onOffLine;
     if (type && type != '0') query.type = type;
-    if (isClosed != null && isClosed == false) query.isClosed = false;
+    if (isClosed != null && isClosed == false) query.isClosed = false; // false : 모집중만 보기, true: 전체 보기
 
     const aggregateSearch = [];
     if (search) {
@@ -135,6 +135,8 @@ export class PostsRepository {
           author: 1,
           likes: 1,
           createdAt: 1,
+          isClosed: 1,
+          totalLikes: 1,
         },
       },
     ];
@@ -318,7 +320,7 @@ export class PostsRepository {
 
   async updateComment(commentId: Types.ObjectId, content: string) {
     const comment = await this.postModel.findOneAndUpdate(
-      { comments: { $elemMatch: { commentId } } },
+      { comments: { $elemMatch: { _id: commentId } } },
       { $set: { 'comments.$.content': content } },
       { new: true },
     );
@@ -348,7 +350,7 @@ export class PostsRepository {
 
   // 회원 탈퇴 시 사용자가 작성한 댓글 제거
   async deleteCommentByAuthor(userId: Types.ObjectId) {
-    await this.postModel.findOneAndUpdate(
+    await this.postModel.updateMany(
       { comments: { $elemMatch: { author: userId } } },
       { $pull: { comments: { author: userId } } },
     );

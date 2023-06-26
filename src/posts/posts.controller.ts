@@ -32,9 +32,10 @@ import { LikeUserGetResponse } from './dto/like-user-get-response';
 import { CommentListResponse } from './dto/comment-list-response';
 import { CommentCreateRequest } from './dto/comment-create-request';
 import { CommentUpdateRequest } from './dto/comment-update-request';
+import { User } from 'src/auth/user.decorator';
 
 @ApiTags('posts')
-@Controller('posts')
+@Controller('api/posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
@@ -54,11 +55,10 @@ export class PostsController {
   @Get('pagination')
   @UseGuards(GetAuthUserGuard)
   async getPostList(
-    @AuthUser() user: AccessTokenPayload,
+    @User('_id') userId: string | null,
     @Query() dto: PostMainGetCondition,
   ): Promise<PostMainListResponse[]> {
-    const userId = user && '_id' in user ? user._id : null;
-    return await this.postsService.getPostList(dto, userId);
+    return await this.postsService.getPostList(dto, new Types.ObjectId(userId));
   }
 
   @ApiOperation({ summary: '페이지네이션 마지막 페이지 조회' })
@@ -85,11 +85,10 @@ export class PostsController {
   @Get(':id')
   @UseGuards(GetAuthUserGuard)
   async getPost(
-    @AuthUser() user: AccessTokenPayload,
+    @User('_id') userId: string | null,
     @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
   ): Promise<PostDetailResponse> {
-    const userId = user && '_id' in user ? user._id : null;
-    return await this.postsService.getPostById(id, userId);
+    return await this.postsService.getPostById(id, new Types.ObjectId(userId));
   }
 
   @ApiOperation({ summary: '모집 추천글 조회' })
@@ -99,11 +98,10 @@ export class PostsController {
   @Get(':id/recommended')
   @UseGuards(GetAuthUserGuard)
   async getRecommendedPostList(
-    @AuthUser() user: AccessTokenPayload,
+    @User('_id') userId: string | null,
     @Param('id', ParseObjectIdPipe) id: Types.ObjectId,
   ): Promise<PostRecommendedListResponse[]> {
-    const userId = user && '_id' in user ? user._id : null;
-    return await this.postsService.getRecommendedPostList(id, userId);
+    return await this.postsService.getRecommendedPostList(id, new Types.ObjectId(userId));
   }
 
   @ApiOperation({ summary: '글 등록' })
@@ -139,8 +137,8 @@ export class PostsController {
   @ApiNoContentResponse()
   @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
-  @Delete('posts/:id')
-  @HttpCode(200)
+  @Delete(':id')
+  @HttpCode(204)
   async deletePost(@Req() request: Request, @Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
     const user: AccessTokenPayload = request['user'];
     const { _id: userId, tokenType } = user;
@@ -187,7 +185,6 @@ export class PostsController {
     type: LikeUserGetResponse,
   })
   @Get(':id/likes')
-  @UseGuards(GetAuthUserGuard)
   async getLikeUserList(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
     const likes = await this.postsService.getLikedUserList(postId);
     return {
@@ -200,7 +197,6 @@ export class PostsController {
     type: CommentListResponse,
   })
   @Get('comments/:id')
-  @UseGuards(GetAuthUserGuard)
   async getCommentList(@Param('id', ParseObjectIdPipe) postId: Types.ObjectId) {
     const comments = await this.postsService.getCommentList(postId);
     return {

@@ -1,8 +1,9 @@
 import { Transform } from 'class-transformer';
-import { IsString } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { toMongoObjectId } from 'src/common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';
+import { PostPositionsCode, UserWorkExperienceCode } from 'src/CommonCode';
 
 export class SignupRequest {
   @ApiProperty({
@@ -25,6 +26,7 @@ export class SignupRequest {
     description: '직군(프론트엔드, 백엔드, 디자인)',
     example: 'FE',
   })
+  @IsEnum(PostPositionsCode)
   @IsString()
   position: string;
 
@@ -32,6 +34,7 @@ export class SignupRequest {
     description: '경력(학생, 1년, 2년, 3년)',
     example: '2',
   })
+  @IsEnum(UserWorkExperienceCode)
   @IsString()
   workExperience: string;
 }

@@ -125,6 +125,7 @@ export class Post {
   endDate: Date;
 
   @ApiProperty({
+    enum: PostTypeCode,
     type: String,
     description: '모집구분(1: 프로젝트, 2: 스터디)',
     example: '1',
@@ -188,6 +189,7 @@ export class Post {
   expectedPeriod: string;
 
   @ApiProperty({
+    enum: PostPositionsCode,
     type: String,
     description: '포지션(FE, BE, DE)',
     example: '["FE", "BE"]',

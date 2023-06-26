@@ -36,7 +36,7 @@ class GithubLogin implements OauthLogin {
     const accessToken = await axios.post(
       'https://github.com/login/oauth/access_token',
       {
-        token,
+        code: token,
         client_id: process.env.GITHUB_CLIENT_ID,
         client_secret: process.env.GITHUB_CLIENT_SECRET,
       },
@@ -46,7 +46,9 @@ class GithubLogin implements OauthLogin {
         },
       },
     );
-    if (!accessToken) throw new BadRequestException('Login ticket not found');
+
+    if (!accessToken || !accessToken.data || !accessToken.data.access_token)
+      throw new BadRequestException('User access token not found');
 
     // 사용자 정보 가져오기
     const { data: userInfo } = await axios.get('https://api.github.com/user', {
@@ -93,6 +95,12 @@ export class LoginService {
     else if (loginType === 'github') oauthLoginImpl = new GithubLogin();
     else if (loginType === 'kakao') oauthLoginImpl = new KakaoLogin();
 
-    return await oauthLoginImpl.login(token);
+    let oAuthResponse: OauthGetResponse;
+    try {
+      oAuthResponse = await oauthLoginImpl.login(token);
+    } catch (error) {
+      throw new BadRequestException(`Invalid oauth parameter`);
+    }
+    return oAuthResponse;
   }
 }

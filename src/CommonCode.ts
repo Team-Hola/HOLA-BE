@@ -1,11 +1,13 @@
 // 프로젝트/스터디
 export const PostTypeCode = {
+  0: '0',
   1: '1',
   2: '2',
 } as const;
 
 // 온/오프라인
 export const PostOnlineOrOfflineCode = {
+  ALL: 'ALL',
   on: 'on',
   off: 'off',
   onOff: 'onOff',

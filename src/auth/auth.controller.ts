@@ -17,8 +17,8 @@ import {
   refs,
 } from '@nestjs/swagger';
 
-@Controller('auth')
 @ApiTags('auth')
+@Controller('api/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
   @UseGuards(RefreshTokenGuard)

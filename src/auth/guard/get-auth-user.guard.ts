@@ -9,12 +9,12 @@ export class GetAuthUserGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
-
     if (token) {
       try {
         const payload: AccessTokenPayload = await this.jwtService.verifyAccessToken(token);
+
         request['user'] = payload;
-      } catch {}
+      } catch (e) {}
     }
     return true;
   }

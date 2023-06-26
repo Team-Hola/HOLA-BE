@@ -27,7 +27,7 @@ import { UserSimpleResponse } from './dto/user-simple-response';
 import { Post as PostSchema } from 'src/posts/schema/post.schema';
 
 @ApiTags('users')
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

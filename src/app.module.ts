@@ -37,8 +37,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(CheckNicknameDuplicationMiddleware)
       .forRoutes(
-        { path: 'users/signup', method: RequestMethod.POST },
-        { path: 'users/:id', method: RequestMethod.PATCH },
+        { path: 'api/users/signup', method: RequestMethod.POST },
+        { path: 'api/users/:id', method: RequestMethod.PATCH },
       );
   }
 }

@@ -48,6 +48,8 @@ export class PostMainFindResult extends PickType(Post, [
   'likes',
   'comments',
   'createdAt',
+  'isClosed',
+  'totalLikes',
 ] as const) {}
 
 export class PostMainListResponse extends IntersectionType(PostMainFindResult, PostVirtualField) {}

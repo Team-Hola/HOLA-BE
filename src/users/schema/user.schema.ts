@@ -66,7 +66,7 @@ export class User {
     maxLength: 100,
     required: true,
   })
-  @Prop({ type: String, required: true, maxlength: 100 })
+  @Prop({ type: String, required: false, maxlength: 100 })
   @IsString()
   nickName: string;
 
@@ -105,6 +105,7 @@ export class User {
     description: '직군(프론트엔드, 백엔드, 디자인)',
     example: 'FE',
     required: false,
+    default: '',
   })
   @Prop()
   @IsString()
@@ -115,6 +116,7 @@ export class User {
     description: '간단 자기소개',
     example: '안녕하세요.',
     required: false,
+    default: '',
   })
   @Prop()
   @IsString()
@@ -125,6 +127,7 @@ export class User {
     description: '경력(학생, 1년, 2년, 3년)',
     example: '2',
     required: false,
+    default: '',
   })
   @Prop()
   @IsString()
@@ -135,6 +138,7 @@ export class User {
     description: '소속 명',
     example: '도미노피자',
     required: false,
+    default: '',
   })
   @Prop()
   @IsString()
@@ -146,6 +150,7 @@ export class User {
     description: '소속 공개여부',
     example: 'false',
     required: false,
+    default: false,
   })
   @Prop({ type: Boolean, default: false })
   @IsBoolean()
@@ -157,7 +162,7 @@ export class User {
     description: '소개 url',
     required: false,
   })
-  @Prop({ type: Array })
+  @Prop([Url])
   @IsArray()
   @IsOptional()
   urls: [Url];

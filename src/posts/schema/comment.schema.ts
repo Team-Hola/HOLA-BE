@@ -10,7 +10,7 @@ export class Comment {
     description: '작성자 ID',
     example: '619fa9b2e08659622c654395',
   })
-  @Prop({ type: Types.ObjectId, required: true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   author: Types.ObjectId;
 
   @ApiProperty({
