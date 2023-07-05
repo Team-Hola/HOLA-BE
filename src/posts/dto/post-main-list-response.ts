@@ -4,7 +4,7 @@ import { Post } from '../schema/post.schema';
 export type PostBadgeType = 'study' | 'project' | 'deadline' | 'new' | 'hot';
 export class PostBadge {
   @ApiProperty({
-    description: '뱃지 종류(deadline, new, host)',
+    description: '뱃지 종류(deadline, new, hot)',
     example: 'deadline',
   })
   type: PostBadgeType;
