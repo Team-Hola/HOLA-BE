@@ -14,6 +14,17 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://holaworld.io',
+      'https://holaworld.io',
+      'http://www.holaworld.io',
+      'https://www.holaworld.io',
+      'ngork.io',
+    ],
+  });
   // new ValidationPipe({
   //   whitelist: true,
   //   forbidNonWhitelisted: true,
