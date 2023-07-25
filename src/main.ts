@@ -18,6 +18,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
+      'http://localhost:5000',
       'http://holaworld.io',
       'https://holaworld.io',
       'http://www.holaworld.io',

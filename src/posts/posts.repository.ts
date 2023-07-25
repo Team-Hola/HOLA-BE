@@ -315,7 +315,7 @@ export class PostsRepository {
       { $push: { comments: { _id: commentId, content, author } } },
       { new: true, upsert: true },
     );
-    //return { post, commentId };
+    return { post, commentId };
   }
 
   async updateComment(commentId: Types.ObjectId, content: string) {
