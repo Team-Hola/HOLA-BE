@@ -60,6 +60,7 @@ export class NotificationsService {
     createObjectId?: Types.ObjectId,
     content?: string,
   ) {
+    if (targetUserId.toString() === createUserId.toString()) return;
     const notifictaionInfo = this.getNotifictaionInfo(noticeType, nickName, postId, content); // 알림 정보 생성
 
     await this.notificationsRepository.createNotification(
