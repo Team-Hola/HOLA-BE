@@ -8,6 +8,7 @@ import { LikePostsService } from 'src/like-posts/like-posts.service';
 import { ReadPostsService } from 'src/read-posts/read-posts.service';
 import { PostsService } from 'src/posts/posts.service';
 import { UserSimpleResponse } from './dto/user-simple-response';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,7 @@ export class UsersService {
     private readonly likePostsService: LikePostsService,
     private readonly readPostsService: ReadPostsService,
     private readonly postsService: PostsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async getUserSignUpResponse(user: UserPOJO): Promise<SignupSuccessResponse> {
@@ -42,6 +44,7 @@ export class UsersService {
     return this.getUserSignUpResponse(updatedUser);
   }
 
+  // 회원 가입
   async signUp(
     id: Types.ObjectId,
     nickName: string,
@@ -50,6 +53,9 @@ export class UsersService {
   ): Promise<SignupSuccessResponse> {
     const user = await this.usersRepository.signUp(id, nickName, position, workExperience);
     if (!user) throw new BadRequestException('User not found');
+
+    // 회원 가입 알림 발송
+    await this.notificationsService.createNotification('signup', id, nickName);
     return await this.getUserSignUpResponse(user);
   }
 

@@ -208,9 +208,13 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Post('comments')
   @HttpCode(201)
-  async createComment(@User('_id') userId: string, @Body() dto: CommentCreateRequest) {
+  async createComment(
+    @User('_id') userId: string,
+    @User('nickName') nickName: string,
+    @Body() dto: CommentCreateRequest,
+  ) {
     const { postId, content } = dto;
-    return await this.postsService.createComment(postId, content, new Types.ObjectId(userId));
+    return await this.postsService.createComment(postId, content, new Types.ObjectId(userId), nickName);
   }
 
   @ApiOperation({ summary: '댓글 수정' })

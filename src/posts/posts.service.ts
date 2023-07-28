@@ -11,6 +11,8 @@ import { PostTopListResponse } from './dto/post-top-list-response';
 import { PostPOJO, PostsRepository } from './posts.repository';
 import { PostCreateRequest } from './dto/post-create-request';
 import { PostUpdateRequest } from './dto/post-update-request';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { Post } from './schema/post.schema';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +20,7 @@ export class PostsService {
     private readonly postsRepository: PostsRepository,
     private readonly readPostsService: ReadPostsService,
     private readonly likePostsService: LikePostsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async getPostById(postId: Types.ObjectId, userId: Types.ObjectId | null): Promise<PostDetailResponse> {
@@ -246,8 +249,17 @@ export class PostsService {
     return this.postsRepository.findCommentList(postId);
   }
 
-  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId) {
-    await this.postsRepository.createComment(postId, content, author);
+  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId, nickName: string) {
+    const { post, commentId } = await this.postsRepository.createComment(postId, content, author); // 댓글 추가
+    await this.notificationsService.createNotification(
+      'comment',
+      post.author,
+      nickName,
+      postId,
+      author,
+      commentId,
+      content,
+    ); // 댓글 알림 추가
   }
 
   async updateComment(commentId: Types.ObjectId, content: string, userId: Types.ObjectId, tokenType: string) {
