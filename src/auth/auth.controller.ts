@@ -1,4 +1,4 @@
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { RefreshTokenGuard } from './guard/refresh-token.guard';
 import { Body, HttpCode, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { Get, Post, Controller } from '@nestjs/common';

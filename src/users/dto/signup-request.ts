@@ -1,9 +1,9 @@
 import { Transform } from 'class-transformer';
 import { IsEnum, IsString } from 'class-validator';
 import { Types } from 'mongoose';
-import { toMongoObjectId } from 'src/common/cast.helper';
+import { toMongoObjectId } from '../../common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { PostPositionsCode, UserWorkExperienceCode } from 'src/CommonCode';
+import { PostPositionsCode, UserWorkExperienceCode } from '../../CommonCode';
 
 export class SignupRequest {
   @ApiProperty({

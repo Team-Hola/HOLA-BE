@@ -11,7 +11,7 @@ import {
   PostPositionsCode,
   PostRecruitsCode,
   PostTypeCode,
-} from 'src/CommonCode';
+} from '../../CommonCode';
 
 export type PostDocument = HydratedDocument<Post>;
 

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { Types } from 'mongoose';
-import { toMongoObjectId } from 'src/common/cast.helper';
+import { toMongoObjectId } from '../../common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
 

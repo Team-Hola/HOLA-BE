@@ -1,4 +1,4 @@
-import { JwtService } from 'src/jwt/jwt.service';
+import { JwtService } from '../../jwt/jwt.service';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';

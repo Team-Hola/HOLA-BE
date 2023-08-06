@@ -6,6 +6,6 @@ export class AppController {
   constructor(private readonly configService: ConfigService) {}
   @Get()
   home() {
-    return `welceom home!`;
+    return `Hello World!`;
   }
 }

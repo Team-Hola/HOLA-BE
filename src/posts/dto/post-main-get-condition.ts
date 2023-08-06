@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { toBoolean, toNumber } from 'src/common/cast.helper';
-import { PostLanguageCode, PostOnlineOrOfflineCode, PostPositionsCode, PostTypeCode } from 'src/CommonCode';
+import { toBoolean, toNumber } from '../../common/cast.helper';
+import { PostLanguageCode, PostOnlineOrOfflineCode, PostPositionsCode, PostTypeCode } from '../../CommonCode';
 
 export class PostMainGetCondition {
   @ApiProperty({

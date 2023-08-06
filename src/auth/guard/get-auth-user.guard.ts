@@ -1,4 +1,4 @@
-import { AccessTokenPayload, JwtService } from 'src/jwt/jwt.service';
+import { AccessTokenPayload, JwtService } from '../../jwt/jwt.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 

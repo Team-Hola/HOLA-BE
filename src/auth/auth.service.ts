@@ -3,7 +3,7 @@ import { JwtService } from './../jwt/jwt.service';
 import { UsersService } from './../users/users.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginSuccessResponse } from './dto/login-success-response';
-import { LoginService, OauthGetResponse } from 'src/login/login.service';
+import { LoginService, OauthGetResponse } from '../login/login.service';
 import { SignupRequiredResponse } from './dto/signup-required-response';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';

@@ -4,9 +4,9 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Types } from 'mongoose';
 import { SignupSuccessResponse } from './dto/signup-success-response';
 import { UserUpdateRequest } from './dto/user-update-request';
-import { LikePostsService } from 'src/like-posts/like-posts.service';
-import { ReadPostsService } from 'src/read-posts/read-posts.service';
-import { PostsService } from 'src/posts/posts.service';
+import { LikePostsService } from '../like-posts/like-posts.service';
+import { ReadPostsService } from '../read-posts/read-posts.service';
+import { PostsService } from '../posts/posts.service';
 import { UserSimpleResponse } from './dto/user-simple-response';
 
 @Injectable()

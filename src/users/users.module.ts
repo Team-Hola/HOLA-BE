@@ -6,9 +6,9 @@ import { UsersRepository } from './users.repository';
 import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LikePostsModule } from 'src/like-posts/like-posts.module';
-import { ReadPostsModule } from 'src/read-posts/read-posts.module';
-import { PostsModule } from 'src/posts/posts.module';
+import { LikePostsModule } from '../like-posts/like-posts.module';
+import { ReadPostsModule } from '../read-posts/read-posts.module';
+import { PostsModule } from '../posts/posts.module';
 
 @Module({
   imports: [

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, isString } from 'class-validator';
 import { Types } from 'mongoose';
-import { toMongoObjectId } from 'src/common/cast.helper';
+import { toMongoObjectId } from '../../common/cast.helper';
 
 export class CommentCreateRequest {
   @ApiProperty({

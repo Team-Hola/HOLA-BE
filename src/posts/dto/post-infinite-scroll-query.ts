@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
-import { toNumber } from 'src/common/cast.helper';
+import { toNumber } from '../../common/cast.helper';
 
 export class PostInfiniteScrollQuery {
   @ApiProperty({

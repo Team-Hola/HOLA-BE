@@ -6,15 +6,12 @@ import { PostsService } from './posts.service';
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { PostMainGetCondition } from './dto/post-main-get-condition';
 import { PostMainListResponse } from './dto/post-main-list-response';
-import { AuthUser } from 'src/auth/auth-user.decorator';
-import { AccessTokenPayload } from 'src/jwt/jwt.service';
 import { PostTopListResponse } from './dto/post-top-list-response';
-import { ParseObjectIdPipe } from 'src/common/pipe/parse-objectid.pipe';
+import { ParseObjectIdPipe } from '../common/pipe/parse-objectid.pipe';
 import { Types } from 'mongoose';
 import { PostRecommendedListResponse } from './dto/post-recommended-list-response';
 import { PostDetailResponse } from './dto/post-detail-response';
-import { AuthenticationGuard } from 'src/auth/guard/authentication.guard';
-import { Req } from '@nestjs/common';
+import { AuthenticationGuard } from '../auth/guard/authentication.guard';
 import { PostUpdateRequest } from './dto/post-update-request';
 import { LikeAddRequest } from './dto/like-add-request';
 import {
@@ -27,12 +24,12 @@ import {
   ApiCreatedResponse,
   ApiNoContentResponse,
 } from '@nestjs/swagger';
-import { Post as PostSchema } from 'src/posts/schema/post.schema';
+import { Post as PostSchema } from '../posts/schema/post.schema';
 import { LikeUserGetResponse } from './dto/like-user-get-response';
 import { CommentListResponse } from './dto/comment-list-response';
 import { CommentCreateRequest } from './dto/comment-create-request';
 import { CommentUpdateRequest } from './dto/comment-update-request';
-import { User } from 'src/auth/user.decorator';
+import { User } from '../auth/user.decorator';
 
 @ApiTags('posts')
 @Controller('api/posts')

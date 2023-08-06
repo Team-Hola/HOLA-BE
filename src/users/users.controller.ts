@@ -6,12 +6,10 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Res
 
 import { Types } from 'mongoose';
 import { SignupRequest } from './dto/signup-request';
-import { QueryRequired } from 'src/common/decorator/query-required.decorator';
+import { QueryRequired } from '../common/decorator/query-required.decorator';
 import { Response } from 'express';
-import { UserPOJO } from './users.repository';
 import { UserUpdateRequest } from './dto/user-update-request';
-import { PostInfiniteScrollQuery } from 'src/posts/dto/post-infinite-scroll-query';
-import { User } from './schema/user.schema';
+import { PostInfiniteScrollQuery } from '../posts/dto/post-infinite-scroll-query';
 import {
   ApiOkResponse,
   ApiTags,
@@ -24,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { NicknameDuplicationResponse } from './dto/nickname-duplictaion-response';
 import { UserSimpleResponse } from './dto/user-simple-response';
-import { Post as PostSchema } from 'src/posts/schema/post.schema';
+import { Post as PostSchema } from '../posts/schema/post.schema';
 
 @ApiTags('users')
 @Controller('api/users')
