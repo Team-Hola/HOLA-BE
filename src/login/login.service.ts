@@ -12,7 +12,6 @@ export class LoginService {
   constructor(private loginFactory: OauthLoginFactory) {}
   async loginOauth(loginType: string, token: string): Promise<OauthGetResponse> {
     const loginPolicy: OauthLoginPocliy = this.loginFactory.getLoginPolicy(loginType);
-
     let oAuthResponse: OauthGetResponse;
     try {
       oAuthResponse = await loginPolicy.login(token);

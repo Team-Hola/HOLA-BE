@@ -82,7 +82,7 @@ export class KakaoLoginPolicy implements OauthLoginPocliy {
   }
 }
 
-interface LoginFactory {
+export interface LoginFactory {
   getLoginPolicy(loginType: string): OauthLoginPocliy;
 }
 
