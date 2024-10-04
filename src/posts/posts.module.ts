@@ -7,6 +7,7 @@ import { PostsController } from './posts.controller';
 import { PostsRepository } from './posts.repository';
 import { PostsService } from './posts.service';
 import { Post, PostSchema } from './schema/post.schema';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Post, PostSchema } from './schema/post.schema';
     JwtModule,
     ReadPostsModule,
     LikePostsModule,
+    NotificationsModule,
   ],
   controllers: [PostsController],
   providers: [PostsService, PostsRepository],

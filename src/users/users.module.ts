@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { LikePostsModule } from '../like-posts/like-posts.module';
 import { ReadPostsModule } from '../read-posts/read-posts.module';
 import { PostsModule } from '../posts/posts.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PostsModule } from '../posts/posts.module';
     LikePostsModule,
     ReadPostsModule,
     PostsModule,
+    NotificationsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

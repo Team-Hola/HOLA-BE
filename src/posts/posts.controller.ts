@@ -205,9 +205,13 @@ export class PostsController {
   @UseGuards(AuthenticationGuard)
   @Post('comments')
   @HttpCode(201)
-  async createComment(@User('_id') userId: string, @Body() dto: CommentCreateRequest) {
+  async createComment(
+    @User('_id') userId: string,
+    @User('nickName') nickName: string,
+    @Body() dto: CommentCreateRequest,
+  ) {
     const { postId, content } = dto;
-    return await this.postsService.createComment(postId, content, new Types.ObjectId(userId));
+    return await this.postsService.createComment(postId, content, new Types.ObjectId(userId), nickName);
   }
 
   @ApiOperation({ summary: '댓글 수정' })
@@ -217,12 +221,13 @@ export class PostsController {
   @Patch('comments/:id')
   async updateComment(
     @User('_id') userId: string,
+    @User('nickName') nickName: string,
     @User('tokenType') tokenType: string,
     @Param('id', ParseObjectIdPipe) commentId: Types.ObjectId,
     @Body() dto: CommentUpdateRequest,
   ) {
     const { content } = dto;
-    return await this.postsService.updateComment(commentId, content, new Types.ObjectId(userId), tokenType);
+    return await this.postsService.updateComment(commentId, content, new Types.ObjectId(userId), tokenType, nickName);
   }
 
   @ApiOperation({ summary: '댓글 삭제' })

@@ -11,6 +11,8 @@ import { PostTopListResponse } from './dto/post-top-list-response';
 import { PostPOJO, PostsRepository } from './posts.repository';
 import { PostCreateRequest } from './dto/post-create-request';
 import { PostUpdateRequest } from './dto/post-update-request';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { CommentCreateSuccessResponse } from './dto/comment-create-success-response';
 
 @Injectable()
 export class PostsService {
@@ -18,6 +20,7 @@ export class PostsService {
     private readonly postsRepository: PostsRepository,
     private readonly readPostsService: ReadPostsService,
     private readonly likePostsService: LikePostsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async getPostById(postId: Types.ObjectId, userId: Types.ObjectId | null): Promise<PostDetailResponse> {
@@ -246,18 +249,41 @@ export class PostsService {
     return this.postsRepository.findCommentList(postId);
   }
 
-  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId) {
-    await this.postsRepository.createComment(postId, content, author);
+  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId, nickName: string) {
+    // TODO 트랜잭션 적용 필요
+    const createSuccessResponse: CommentCreateSuccessResponse = await this.postsRepository.createComment(
+      postId,
+      content,
+      author,
+    );
+    await this.notificationsService.createCommentNotice(
+      createSuccessResponse.post.author,
+      nickName,
+      postId,
+      author,
+      createSuccessResponse.commentId,
+      content,
+    ); // 알림 발송
   }
 
-  async updateComment(commentId: Types.ObjectId, content: string, userId: Types.ObjectId, tokenType: string) {
+  async updateComment(
+    commentId: Types.ObjectId,
+    content: string,
+    userId: Types.ObjectId,
+    tokenType: string,
+    nickName: string,
+  ) {
+    // TODO 트랜잭션 적용 필요
     await this.checkCommentAuthorization(commentId, userId, tokenType);
     await this.postsRepository.updateComment(commentId, content);
+    await this.notificationsService.modifyCommentContent(commentId, nickName, content); // 댓글 수정 시 알림 내용 수정
   }
 
   async deleteComment(commentId: Types.ObjectId, userId: Types.ObjectId, tokenType: string) {
+    // TODO 트랜잭션 적용 필요
     await this.checkCommentAuthorization(commentId, userId, tokenType);
     await this.postsRepository.deleteComment(commentId);
+    await this.notificationsService.deleteNotificationByCreateObjectId(commentId); // 댓글 삭제 시 알림 삭제
   }
 
   // 글 인가 체크

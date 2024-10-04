@@ -79,6 +79,21 @@ export class NotificationsService {
     await this.notificationsRepository.updateNotificationTitle(commentId, title);
   }
 
+  // 댓글 삭제 시 관련 알림 삭제
+  async deleteNotificationByCreateObjectId(createObjectId: Types.ObjectId): Promise<void> {
+    await this.notificationsRepository.deleteNotificationByCreateObjectId(createObjectId);
+  }
+
+  // 글 삭제 시 관련 알림 제거
+  async deleteNotificationByPostId(postId: Types.ObjectId): Promise<void> {
+    await this.notificationsRepository.deleteNotificationByPostId(postId);
+  }
+
+  // 회원 탈퇴 시 관련 알림 제거
+  async deleteNotificationByUser(userId: Types.ObjectId): Promise<void> {
+    await this.notificationsRepository.deleteNotificationByUser(userId);
+  }
+
   // ~시간전 계산
   timeForCreatedAt(createdAt: Date): string {
     const today: Date = new Date();

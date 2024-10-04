@@ -6,6 +6,7 @@ import { PostMainFindResult, PostMainListResponse } from './dto/post-main-list-r
 import { PostRecommendedListResponse } from './dto/post-recommended-list-response';
 import { Post } from './schema/post.schema';
 import { PostUpdateRequest } from './dto/post-update-request';
+import { CommentCreateSuccessResponse } from './dto/comment-create-success-response';
 
 export type PostPOJO = FlattenMaps<Post>;
 
@@ -308,14 +309,19 @@ export class PostsRepository {
     return result.comments;
   }
 
-  async createComment(postId: Types.ObjectId, content: string, author: Types.ObjectId) {
+  async createComment(
+    postId: Types.ObjectId,
+    content: string,
+    author: Types.ObjectId,
+  ): Promise<CommentCreateSuccessResponse> {
     const commentId = new Types.ObjectId();
-    const post = await this.postModel.findOneAndUpdate(
+    let post = await this.postModel.findOneAndUpdate(
       { _id: postId },
       { $push: { comments: { _id: commentId, content, author } } },
       { new: true, upsert: true },
     );
-    //return { post, commentId };
+    post = post.toObject(); // object로 반환
+    return { post, commentId };
   }
 
   async updateComment(commentId: Types.ObjectId, content: string) {
