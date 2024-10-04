@@ -11,6 +11,7 @@ import { CheckNicknameDuplicationMiddleware } from './users/middleware/check-nic
 import { JwtModule } from './jwt/jwt.module';
 import { CommonModule } from './common/common.module';
 import { LikePostsModule } from './like-posts/like-posts.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { LikePostsModule } from './like-posts/like-posts.module';
     CommonModule,
     LikePostsModule,
     ReadPostsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],

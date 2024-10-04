@@ -121,3 +121,12 @@ export const PostLanguageCode = {
   zeplin: 'zeplin',
   udemy: 'udemy',
 } as const;
+
+// 알림 발생 유형
+export const NotificationCode = {
+  comment: 'comment',
+  signup: 'signup',
+} as const;
+
+// 알림 발생 유형 type
+export type NotificationType = 'comment' | 'signup';

@@ -74,7 +74,13 @@ export class UsersRepository {
   }
 
   async findUserById(id: Types.ObjectId): Promise<UserPOJO> {
-    return await this.userModel.findById(id).lean().exec();
+    return await this.userModel
+      .findById(id)
+      .select(
+        '_id nickName image workExperience position organizationName organizationIsOpen urls introduce likeLanguages',
+      )
+      .lean()
+      .exec();
   }
 
   async findSimpleUserById(id: Types.ObjectId): Promise<UserSimpleResponse> {
