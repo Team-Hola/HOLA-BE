@@ -137,3 +137,19 @@ export const NotificationCode = {
 
 // 알림 발생 유형 type
 export type NotificationType = 'comment' | 'signup';
+
+// 공모전 구분
+export const EventTypeCode = {
+  conference: 'conference',
+  hackathon: 'hackathon',
+  contest: 'contest',
+  bootcamp: 'bootcamp',
+  others: 'others',
+} as const;
+
+// 공모전 온오프라인 구분
+export const EventOnOffLineCode = {
+  on: 'on',
+  off: 'off',
+  onOff: 'onOff',
+} as const;

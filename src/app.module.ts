@@ -12,6 +12,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { CommonModule } from './common/common.module';
 import { LikePostsModule } from './like-posts/like-posts.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     LikePostsModule,
     ReadPostsModule,
     NotificationsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],
