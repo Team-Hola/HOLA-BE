@@ -62,30 +62,37 @@ export const PostPositionsCode = {
 
 // 경력
 export const UserWorkExperienceCode = {
-  n: 'n',
-  1: '1',
-  2: '2',
-  3: '3',
-  4: '4',
-  5: '5',
-  6: '6',
-  7: '7',
-  8: '8',
-  9: '9',
-  mo: 'mo',
+  0: '0년',
+  '1': '1년',
+  '2': '2년',
+  '3': '3년',
+  '4': '4년',
+  '5': '5년',
+  '6': '6년',
+  '7': '7년',
+  '8': '8년',
+  '9': '9년',
+  '10': '10년 이상',
 } as const;
 
 // URL Type
 export const UserUrlType = {
-  GitHub: 'GitHub',
-  Notion: 'Notion',
-  LinkedIn: 'LinkedIn',
-  Instargram: 'Instargram',
-  Brunch: 'Brunch',
-  Youtube: 'Youtube',
-  Blog: 'Blog',
   Link: 'Link',
+  Behance: 'Behance',
+  Brunch: 'Brunch',
+  Dribble: 'Dribble',
+  Facebook: 'Facebook',
+  GitHub: 'GitHub',
+  Instargram: 'Instargram',
+  LinkedIn: 'LinkedIn',
+  Naverblog: 'Naverblog',
+  Notefolio: 'Notefolio',
+  Notion: 'Notion',
+  Pinterest: 'Pinterest',
+  Youtube: 'Youtube',
   Twitter: 'Twitter',
+  Tistory: 'Tistory',
+  Velog: 'Velog',
 } as const;
 
 export const PostLanguageCode = {

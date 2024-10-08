@@ -138,10 +138,21 @@ export class PostsRepository {
           createdAt: 1,
           isClosed: 1,
           totalLikes: 1,
+          score: { $meta: 'searchScore' },
         },
       },
     ];
 
+    // 텍스트 검색 시 score 2 이상 적용
+    if (search && typeof search === 'string') {
+      aggregate.push({
+        $match: {
+          score: {
+            $gte: 0.5,
+          },
+        },
+      });
+    }
     const posts = await this.postModel.aggregate(aggregate).sort('-createdAt').skip(pageToSkip).limit(itemsPerPage);
     // author array to object
     const result = posts.map((post: any) => {
@@ -168,7 +179,31 @@ export class PostsRepository {
       search,
       onOffLine,
     );
-    const aggregate = [...aggregateSearch, { $match: query }, { $count: 'lastPage' }];
+    const aggregate = [
+      ...aggregateSearch,
+      { $match: query },
+      {
+        $project: {
+          title: 1,
+          score: { $meta: 'searchScore' },
+        },
+      },
+    ];
+
+    if (search && typeof search === 'string') {
+      aggregate.push({
+        $match: {
+          score: {
+            $gte: 0.5,
+          },
+        },
+      });
+    }
+
+    aggregate.push({
+      $count: 'lastPage',
+    });
+
     const lastPage = await this.postModel.aggregate(aggregate);
     return lastPage[0].lastPage;
   }
