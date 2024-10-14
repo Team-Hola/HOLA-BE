@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FlattenMaps, Model, Types } from 'mongoose';
 import { Event } from './schema/event.schema';
-import { EventCreateRequest } from './dto/post-create-request';
+import { EventCreateRequest } from './dto/event-create-request';
+import { EventTitleResponse } from './dto/event-title-response';
+import { EventRecommendedListResponse } from './dto/event-recommended-list-response';
+import { EventAddLikeResponse } from './dto/event-add-like-response';
 
 export type EventPOJO = FlattenMaps<Event>;
 
@@ -10,17 +13,21 @@ export type EventPOJO = FlattenMaps<Event>;
 export class EventsRepository {
   constructor(@InjectModel(Event.name) private eventModel: Model<Event>) {}
 
-  async createEvent(userId: Types.ObjectId, dto: EventCreateRequest) {
+  async createEvent(dto: EventCreateRequest, smallImageUrl: string) {
     return this.eventModel.create({
       ...dto,
-      author: userId,
+      smallImageUrl,
     });
   }
 
-  async updateEvent(eventId: Types.ObjectId, dto: EventCreateRequest) {
-    return this.eventModel.findByIdAndUpdate(eventId, dto, {
-      new: true,
-    });
+  async updateEvent(eventId: Types.ObjectId, dto: EventCreateRequest, smallImageUrl: string) {
+    return this.eventModel.findByIdAndUpdate(
+      eventId,
+      { ...dto, smallImageUrl },
+      {
+        new: true,
+      },
+    );
   }
 
   async deleteEvent(eventId: Types.ObjectId) {
@@ -69,72 +76,181 @@ export class EventsRepository {
 
   async findMainList(
     page: number = 1,
-    language: string[] | null,
-    isClosed: boolean = false,
-    type: string | null,
-    position: string | null,
+    sort: string | null,
+    eventType: string | null,
     search: string | null,
     onOffLine: string | null,
-  ): Promise<PostMainFindResult[]> {
+  ): Promise<EventPOJO[]> {
     const itemsPerPage = 4 * 5; // 한 페이지에 표현할 수
-    const pageToSkip = (page - 1) * itemsPerPage;
+    let pageToSkip = 0;
+    if (page > 0) pageToSkip = (Number(page) - 1) * itemsPerPage;
+    let sortQuery = [];
+    // Sorting
+    if (sort) {
+      const sortableColumns = ['views', 'createdAt'];
+      sortQuery = sort.split(',').filter((value: string) => {
+        return sortableColumns.indexOf(value.substr(1, value.length)) !== -1 || sortableColumns.indexOf(value) !== -1;
+      });
+      sortQuery.push('-createdAt');
+    } else {
+      sortQuery.push('-createdAt');
+    }
+    const { query, aggregateSearch } = this.createQueryInFindMain(eventType, onOffLine, null, search);
+    const aggregate = [...aggregateSearch, { $match: query }];
 
-    const { query, aggregateSearch } = this.createQueryInFindMain(
-      language,
-      isClosed,
-      type,
-      position,
-      search,
-      onOffLine,
-    );
+    const events = await this.eventModel
+      .aggregate(aggregate)
+      .sort(sortQuery.join(' '))
+      .skip(pageToSkip)
+      .limit(itemsPerPage);
+
+    return events;
+  }
+
+  async findMainListInCalendar(
+    year: number,
+    month: number,
+    eventType: string | null,
+    search: string | null,
+    onOffLine: string | null,
+  ): Promise<EventPOJO[]> {
+    const { query, aggregateSearch } = this.createQueryInFindMain(eventType, onOffLine, null, search);
+    const firstDay = new Date(year, month - 1, 1);
+    const lastDay = new Date(year, month);
+    query.startDate = { $gte: firstDay, $lte: lastDay };
+    const aggregate = [...aggregateSearch, { $match: query }];
+    const events = await this.eventModel.aggregate(aggregate).sort('startDate');
+    return events;
+  }
+
+  async findMainLastPage(eventType, onOffLine, search) {
+    const { query, aggregateSearch } = this.createQueryInFindMain(eventType, onOffLine, null, search);
     const aggregate = [
       ...aggregateSearch,
       { $match: query },
       {
-        $lookup: {
-          from: 'users',
-          localField: 'author',
-          foreignField: '_id',
-          pipeline: [{ $project: { _id: 1, nickName: 1, image: 1 } }],
-          as: 'author',
-        },
-      },
-      {
         $project: {
-          type: 1,
-          startDate: 1,
           title: 1,
-          language: 1,
-          positions: 1,
-          comments: 1,
-          views: 1,
-          author: 1,
-          likes: 1,
-          createdAt: 1,
-          isClosed: 1,
-          totalLikes: 1,
           score: { $meta: 'searchScore' },
         },
       },
     ];
+    aggregate.push({
+      $count: 'eventCount',
+    });
+    const result: any = await this.eventModel.aggregate(aggregate);
+    if (result && result.length > 0) return result[0].eventCount;
+    else return 0;
+  }
 
-    // 텍스트 검색 시 score 2 이상 적용
-    if (search && typeof search === 'string') {
-      aggregate.push({
-        $match: {
-          score: {
-            $gte: 0.5,
+  async increaseView(eventId: Types.ObjectId) {
+    await this.eventModel.findByIdAndUpdate(eventId, {
+      $inc: {
+        views: 1,
+      },
+    });
+  }
+
+  async findTitleListForSelectBox(limit: number): Promise<EventTitleResponse[]> {
+    const query = this.createQueryInFindMain(null, null, false, null); // 조회 query 생성
+    const events = await this.eventModel.find(query).select('_id title').sort('-createdAt').limit(limit).lean();
+    return events;
+  }
+
+  async findRecommendedEventList(notInEventId: Types.ObjectId[]): Promise<EventRecommendedListResponse[]> {
+    let { query } = this.createQueryInFindMain(null, null, false, null); // 조회 query 생성
+    query._id = { $nin: notInEventId };
+    let limit = 10 - notInEventId.length;
+    const today = new Date();
+    query.startDate = { $gte: today.setDate(today.getDate() - 180) };
+
+    const events = await this.eventModel
+      .find(query)
+      .select(
+        '_id title eventType imageUrl smallImageUrl startDate endDate views place organization applicationStartDate applicationEndDate',
+      )
+      .sort('-views')
+      .limit(limit)
+      .lean();
+    return events;
+  }
+
+  async findByEventId(eventId: Types.ObjectId): Promise<EventPOJO> {
+    return await this.eventModel.findById(eventId).lean();
+  }
+
+  async getRandomEventByType(
+    notInEventId: Types.ObjectId[],
+    eventType: string | null,
+    size: number,
+  ): Promise<EventRecommendedListResponse[]> {
+    let { query } = this.createQueryInFindMain(eventType, null, false, null); // 조회 query 생성
+    query._id = { $nin: notInEventId };
+    // TODO 기간 조건 추가
+
+    const event = await this.eventModel.aggregate([{ $match: query }, { $sample: { size: size } }]);
+    return event;
+  }
+
+  // 신청기간이 지난글 자동 마감
+  async updateClosedAfterEndDate() {
+    const today = new Date();
+    await this.eventModel.updateMany(
+      { $and: [{ isClosed: false }, { applicationEndDate: { $lte: today } }] },
+      { isClosed: true },
+    );
+  }
+
+  // 관심등록 추가
+  // 디바운스 실패 경우를 위해 예외처리
+  async addLike(eventId: Types.ObjectId, userId: Types.ObjectId): Promise<EventAddLikeResponse> {
+    const event: EventPOJO[] = await this.eventModel.find({ _id: eventId, likes: { $in: [userId] } }).lean();
+    const isLikeExist = event.length > 0;
+    let result: EventPOJO;
+
+    if (!isLikeExist) {
+      result = await this.eventModel.findByIdAndUpdate(
+        { _id: eventId },
+        {
+          $push: {
+            likes: {
+              _id: userId,
+            },
+          },
+          $inc: {
+            totalLikes: 1,
           },
         },
-      });
+        {
+          new: true,
+          upsert: true,
+        },
+      );
+    } else {
+      result = event[event.length - 1];
     }
-    const posts = await this.postModel.aggregate(aggregate).sort('-createdAt').skip(pageToSkip).limit(itemsPerPage);
-    // author array to object
-    const result = posts.map((post: any) => {
-      if (post.author.length > 0) post.author = post.author[post.author.length - 1];
-      return post;
-    });
+    return { event: result, isLikeExist };
+  }
 
-    return result;
+  // 관심 등록 삭제
+  async deleteLike(eventId: Types.ObjectId, userId: Types.ObjectId): Promise<EventAddLikeResponse> {
+    const events: EventPOJO[] = await this.eventModel.find({ _id: eventId }).lean();
+    let event: EventPOJO | null = events[events.length - 1];
+    const isLikeExist = event && event.likes.indexOf(userId) > -1;
+    if (isLikeExist) {
+      event = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        {
+          $pull: { likes: userId },
+          $inc: {
+            totalLikes: -1,
+          },
+        },
+        {
+          new: true,
+        },
+      );
+    }
+    return { event, isLikeExist };
   }
 }

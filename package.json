@@ -20,7 +20,7 @@
     "test:e2e": "NODE_ENV=development jest --config ./test/jest-e2e.json --detectOpenHandles"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.348.0",
+    "@aws-sdk/client-s3": "^3.670.0",
     "@aws-sdk/s3-request-presigner": "^3.348.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.2",

@@ -13,6 +13,7 @@ import { CommonModule } from './common/common.module';
 import { LikePostsModule } from './like-posts/like-posts.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventsModule } from './events/events.module';
+import { LikeEventsModule } from './like-events/like-events.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { EventsModule } from './events/events.module';
     ReadPostsModule,
     NotificationsModule,
     EventsModule,
+    LikeEventsModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],
