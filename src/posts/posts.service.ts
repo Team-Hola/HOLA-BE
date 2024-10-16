@@ -172,7 +172,7 @@ export class PostsService {
     let badge: PostBadge[] = [];
     if (createdAt > daysAgo) badge.push(this.addBadge('new', '🍞따끈따끈 새 글'));
     else if (startDate > today && (startDate.getTime() - today.getTime()) / millisecondDay <= 3)
-      badge.push(this.addBadge('deadline', `마감 ${this.timeForEndDate(startDate, today)}`));
+      badge.push(this.addBadge('deadline', `${this.timeForEndDate(startDate, today)}`));
     else if (Math.abs(views / Math.ceil((today.getTime() - createdAt.getTime()) / millisecondDay)) >= 60)
       badge.push(this.addBadge('hot', '💙 인기'));
 
@@ -188,14 +188,27 @@ export class PostsService {
 
   // ~시간 전 구하기
   private timeForEndDate(endDate: Date, today: Date): string {
-    const betweenTime: number = Math.floor((endDate.getTime() - today.getTime()) / 1000 / 60);
+    // 시간을 제외하고 day로만 계산
+    if (endDate < today) return ``;
 
-    const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
-    if (betweenTimeDay > 1 && betweenTimeDay < 365) {
-      return `${betweenTimeDay}일전`;
-    }
+    const betweenTime: number = Math.floor((endDate.getTime() - today.getTime()) / 1000 / 60);
     const betweenTimeHour = Math.floor(betweenTime / 60);
-    return `${betweenTimeHour}시간전`;
+    if (betweenTimeHour < 24) return `오늘 마감`;
+
+    const betweenTimeDay = Math.ceil(betweenTime / 60 / 24);
+    if (betweenTimeDay < 365) {
+      return `마감 ${betweenTimeDay}일전`;
+    }
+
+    return `마감 ${Math.floor(betweenTimeDay / 365)}년전`;
+    // const betweenTime: number = Math.floor((endDate.getTime() - today.getTime()) / 1000 / 60);
+
+    // const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+    // if (betweenTimeDay > 1 && betweenTimeDay < 365) {
+    //   return `${betweenTimeDay}일전`;
+    // }
+    // const betweenTimeHour = Math.floor(betweenTime / 60);
+    // return `${betweenTimeHour}시간전`;
   }
 
   async getWrittenPostByUser(userId: Types.ObjectId, offset: number, limit: number) {
