@@ -14,6 +14,7 @@ import { LikePostsModule } from './like-posts/like-posts.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EventsModule } from './events/events.module';
 import { LikeEventsModule } from './like-events/like-events.module';
+import { CampaignsModule } from './campaigns/campaigns.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { LikeEventsModule } from './like-events/like-events.module';
     NotificationsModule,
     EventsModule,
     LikeEventsModule,
+    CampaignsModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],

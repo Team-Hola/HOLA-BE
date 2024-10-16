@@ -153,3 +153,16 @@ export const EventOnOffLineCode = {
   off: 'off',
   onOff: 'onOff',
 } as const;
+
+// 캠페인 광고유형(conversion 전환형, view 노출형)
+export const CampaignConversionCode = {
+  conversion: '전환형',
+  view: '노출형',
+} as const;
+
+// 광고 상태(before 진행전, active 진행중, close종료)
+export const AdStatusCode = {
+  before: '진행전',
+  active: '진행중',
+  close: '종료',
+} as const;
