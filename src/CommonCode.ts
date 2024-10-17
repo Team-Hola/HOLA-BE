@@ -160,9 +160,34 @@ export const CampaignConversionCode = {
   view: '노출형',
 } as const;
 
-// 광고 상태(before 진행전, active 진행중, close종료)
+// 광고 상태
 export const AdStatusCode = {
   before: '진행전',
   active: '진행중',
   close: '종료',
 } as const;
+
+// 광고유형
+export const AdTypeCode = {
+  banner: '메인 배너',
+  event: '공모전',
+  eventBanner: '공모전 배너',
+  modalBanner: '모달 상세 배너',
+  postBlock: '모집 블럭',
+} as const;
+
+export type AdType = keyof typeof AdTypeCode;
+
+// 링크 오픈 유형
+export const linkOpenCode = {
+  blank: '새탭',
+  self: '현재탭',
+} as const;
+
+// 로그 유형
+export const AdLogCode = {
+  impression: '노출',
+  reach: '도달',
+} as const;
+
+export type AdLogType = keyof typeof AdLogCode;

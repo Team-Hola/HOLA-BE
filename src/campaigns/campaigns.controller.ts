@@ -22,13 +22,8 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { GetAuthUserGuard } from 'src/auth/guard/get-auth-user.guard';
-import { User } from 'src/auth/user.decorator';
 import { Types } from 'mongoose';
 import { ParseObjectIdPipe } from 'src/common/pipe/parse-objectid.pipe';
-import { AuthenticationGuard } from 'src/auth/guard/authentication.guard';
-import { LikeUserGetResponse } from './dto/like-user-get-response';
-import { LikeAddRequest } from './dto/like-add-request';
 import { AuthenticationAdminGuard } from 'src/auth/guard/authentication.admin.guard';
 import { CampaignCreateRequest } from './dto/campaign-create-request';
 import { Campaign, CampaignSchema } from './schema/campaign.schema';
