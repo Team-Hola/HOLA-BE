@@ -22,6 +22,10 @@ async function bootstrap() {
       'https://holaworld.io',
       'http://www.holaworld.io',
       'https://www.holaworld.io',
+      'http://admin.holaworld.io',
+      'https://admin.holaworld.io',
+      'http://www.admin.holaworld.io',
+      'https://www.admin.holaworld.io',
       'ngork.io',
     ],
   });

@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -161,7 +162,7 @@ export class EventsController {
   })
   @ApiBearerAuth()
   @UseGuards(AuthenticationGuard)
-  @Patch(':id')
+  @Put(':id')
   async updateEvent(
     @User('_id') userId: string,
     @User('tokenType') tokenType: string,

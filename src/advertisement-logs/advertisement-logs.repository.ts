@@ -9,7 +9,7 @@ export class AdvertisementLogsRepository {
   constructor(@InjectModel(AdvertisementLog.name) private advertisementLogModel: Model<AdvertisementLog>) {}
 
   // 광고 성과 집계
-  async findADResult(advertiesmentId: Types.ObjectId) {
+  async findADResult(advertiesmentId: Types.ObjectId[]) {
     const result = await this.advertisementLogModel
       .aggregate([
         {

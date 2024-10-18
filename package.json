@@ -28,6 +28,7 @@
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/mongoose": "^9.2.2",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/schedule": "^4.1.1",
     "@nestjs/swagger": "^7.0.2",
     "@nestjs/typeorm": "^9.0.0",
     "@types/sanitize-html": "^2.9.0",

@@ -16,6 +16,8 @@ import { EventsModule } from './events/events.module';
 import { LikeEventsModule } from './like-events/like-events.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { AdvertisementsModule } from './advertisement/advertisements.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksService } from './schedule/tasks.service';
 
 @Module({
   imports: [
@@ -37,9 +39,10 @@ import { AdvertisementsModule } from './advertisement/advertisements.module';
     LikeEventsModule,
     CampaignsModule,
     AdvertisementsModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [ConfigService],
+  providers: [ConfigService, TasksService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {

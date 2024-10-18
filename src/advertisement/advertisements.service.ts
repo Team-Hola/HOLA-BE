@@ -43,6 +43,11 @@ export class AdvertisementsService {
     return result;
   }
 
+  // 캠페인의 광고 리스트 조회
+  async getAdvertisementInCampaign(advertisementId: Types.ObjectId): Promise<AdvertisementPOJO[]> {
+    let advertisements: AdvertisementPOJO[] = await this.advertisementsRepository.findCampaignAdsList(advertisementId);
+    return advertisements;
+  }
   async createAdvertisement(advertisement: AdvertisementCreateRequest) {
     const advertisementRecord = await this.advertisementsRepository.createAdvertisement(advertisement);
     return advertisementRecord;

@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -107,7 +108,7 @@ export class AdvertisementsController {
   })
   @ApiBearerAuth()
   @UseGuards(AuthenticationAdminGuard)
-  @Patch(':id')
+  @Put(':id')
   async updateAdvertisement(
     @Param('id', ParseObjectIdPipe) advertisementId: Types.ObjectId,
     @Body() dto: AdvertisementCreateRequest,

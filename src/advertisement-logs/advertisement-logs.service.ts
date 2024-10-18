@@ -11,7 +11,7 @@ export class AdvertisementLogsService {
     await this.advertisementLogsRepository.create(advertisementId, logType);
   }
 
-  async getAdResult(advertiesmentId: Types.ObjectId) {
+  async getAdResult(advertiesmentId: Types.ObjectId[]) {
     const result = this.advertisementLogsRepository.findADResult(advertiesmentId);
     return result;
   }
