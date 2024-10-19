@@ -14,4 +14,5 @@ export class UserSimpleResponse extends PickType(User, [
   'urls',
   'createdAt',
   'updatedAt',
+  'status',
 ] as const) {}

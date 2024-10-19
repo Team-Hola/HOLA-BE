@@ -3,7 +3,7 @@ import { IsEnum, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 import { toMongoObjectId } from '../../common/cast.helper';
 import { ApiProperty } from '@nestjs/swagger';
-import { PostPositionsCode, UserWorkExperienceCode } from '../../CommonCode';
+import { PostPositionsCode, UserWorkExperienceCode, userStatusCode } from '../../CommonCode';
 
 export class SignupRequest {
   @ApiProperty({
@@ -37,4 +37,8 @@ export class SignupRequest {
   @IsEnum(UserWorkExperienceCode)
   @IsString()
   workExperience: string;
+
+  @ApiProperty({ enum: userStatusCode, isArray: true, description: '유저 상태' })
+  @IsEnum(userStatusCode, { each: true })
+  status: string[];
 }

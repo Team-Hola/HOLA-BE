@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { userStatusCode } from 'src/CommonCode';
 export type UserDocument = HydratedDocument<User>;
 
 //@Schema()
@@ -176,6 +177,12 @@ export class User {
   })
   @Prop()
   updatedAt?: Date;
+
+  @ApiProperty({ enum: userStatusCode, isArray: true, description: '유저 상태' })
+  @Prop([String])
+  @IsEnum(userStatusCode, { each: true })
+  @IsArray()
+  status: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

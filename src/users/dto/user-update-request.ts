@@ -12,5 +12,6 @@ export class UserUpdateRequest extends PartialType(
     'organizationIsOpen',
     'likeLanguages',
     'urls',
+    'status',
   ] as const),
 ) {}

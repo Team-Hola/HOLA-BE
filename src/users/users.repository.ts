@@ -77,7 +77,7 @@ export class UsersRepository {
     return await this.userModel
       .findById(id)
       .select(
-        '_id nickName image workExperience position organizationName organizationIsOpen urls introduce likeLanguages',
+        '_id nickName image workExperience position organizationName organizationIsOpen urls introduce likeLanguages status',
       )
       .lean()
       .exec();
