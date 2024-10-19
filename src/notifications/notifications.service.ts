@@ -41,9 +41,18 @@ export class NotificationsService {
   async createSignUpNotice(targetUserId: Types.ObjectId, nickName: string) {
     let icon = `👋`;
     let urn = `/setting`;
-    let title = `${nickName}님 반가워요 🥳 올라에서 원하는 팀원을 만나보세요 :)`;
+    let title = `Hola 알림`;
+    let content = `${nickName}님, 만나서 반가워요 👋🏻\n1만명의 올리들이 ${nickName}님에 대해 알고싶대요!\n지금 프로필을 작성하고 팀 매칭률을 올려볼까요?`;
     let buttonLabel = `프로필 완성하기`;
-    await this.notificationsRepository.createNotification('signup', targetUserId, urn, title, icon, buttonLabel);
+    await this.notificationsRepository.createNotification(
+      'signup',
+      targetUserId,
+      urn,
+      title,
+      content,
+      icon,
+      buttonLabel,
+    );
   }
 
   // 댓글 알림
@@ -59,13 +68,15 @@ export class NotificationsService {
 
     let icon = `💬`;
     let urn = `/study/${postId.toString()}`;
-    let title = `${nickName}이 댓글을 남겼어요: ${commentContent}`;
+    let title = `새로운 댓글이 달렸어요!`;
+    let content = `${nickName}이 댓글을 남겼어요. ${commentContent}`;
     let buttonLabel = `확인하기`;
     await this.notificationsRepository.createNotification(
       'comment',
       targetUserId,
       urn,
       title,
+      content,
       icon,
       buttonLabel,
       createUserId,

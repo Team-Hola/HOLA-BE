@@ -19,7 +19,7 @@ export class NotificationsRepository {
       .find({ targetUserId, createdAt: { $gte: oneMonthAgo } })
       .populate('createUserId', 'nickName')
       .sort('isRead -createdAt')
-      .select(`title isRead href createUserId noticeType createdAt icon buttonLabel`)
+      .select(`title isRead href createUserId noticeType createdAt icon buttonLabel content`)
       .lean();
   }
 
@@ -39,6 +39,7 @@ export class NotificationsRepository {
     targetUserId: Types.ObjectId,
     urn: string,
     title: string,
+    content: string,
     icon: string,
     buttonLabel: string,
     createUserId?: Types.ObjectId,
@@ -52,6 +53,7 @@ export class NotificationsRepository {
       createUserId,
       href,
       title,
+      content,
       noticeType,
       createObjectId,
       buttonLabel,

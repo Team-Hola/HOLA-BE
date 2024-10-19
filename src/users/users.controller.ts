@@ -1,8 +1,22 @@
+import { LikeEventsService } from './../like-events/like-events.service';
 import { UserAuthorizationGuard } from './guard/user-authorization.guard';
 import { SignupSuccessResponse } from './dto/signup-success-response';
 import { ParseObjectIdPipe } from '../common/pipe/parse-objectid.pipe';
 import { UsersService } from './../users/users.service';
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 
 import { Types } from 'mongoose';
 import { SignupRequest } from './dto/signup-request';
@@ -23,11 +37,17 @@ import {
 import { NicknameDuplicationResponse } from './dto/nickname-duplictaion-response';
 import { UserSimpleResponse } from './dto/user-simple-response';
 import { Post as PostSchema } from '../posts/schema/post.schema';
+import { Event as EventSchema } from '../events/schema/event.schema';
+import { EventsService } from 'src/events/events.service';
 
 @ApiTags('users')
 @Controller('api/users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly likeEventsService: LikeEventsService,
+    private readonly eventsService: EventsService,
+  ) {}
 
   @ApiOperation({ summary: '회원가입' })
   @ApiOkResponse({
@@ -163,5 +183,32 @@ export class UsersController {
   async getWrittenPost(@Param('id', ParseObjectIdPipe) id: Types.ObjectId, @Query() query: PostInfiniteScrollQuery) {
     const { offset, limit } = query;
     return await this.usersService.getWrittenPostByUser(id, offset, limit);
+  }
+
+  @ApiOperation({ summary: '관심 등록 공모전 리스트 조회' })
+  @ApiOkResponse({
+    type: EventSchema,
+  })
+  @Get(':id/like-events')
+  async getLikedEvent(@Param('id', ParseObjectIdPipe) userId: Types.ObjectId) {
+    return await this.likeEventsService.getLikedEventByUserId(userId);
+  }
+
+  @ApiOperation({ summary: '관심 등록 공모전 리스트 조회(캘린더)' })
+  @ApiOkResponse({
+    type: EventSchema,
+  })
+  @Get(':id/like-events/calendar/:year/:month')
+  async getLikedEventByCalenar(
+    @Param('id', ParseObjectIdPipe) userId: Types.ObjectId,
+    @Param('year', ParseIntPipe) year: number,
+    @Param('month', ParseIntPipe) month: number,
+  ) {
+    const events = await this.likeEventsService.getLikedEventsByCalendar(userId, year, month);
+    if (!events) {
+      return events;
+    }
+
+    return this.eventsService.addPostVirtualField(events, userId);
   }
 }

@@ -217,34 +217,12 @@ export class EventsController {
     };
   }
 
-  // TODO
-  // #region 추천 공모전
-  /**
-   * @swagger
-   * paths:
-   *   /events/recommend:
-   *    get:
-   *      tags:
-   *        - 공모전
-   *      summary: 추천 공모전 조회(AD)
-   *      description: 추천 공모전을 조회한다.
-   *      responses:
-   *        200:
-   *          description: successful operation
-   *          content:
-   *            application/json:
-   *              schema:
-   *                type: array
-   *                items:
-   *                  $ref: '#/components/schemas/RecommendedEvent'
-   */
-  // #endregion
-  // route.get(
-  //   '/recommend',
-  //   asyncErrorWrapper(async (req: Request, res: Response, next: NextFunction) => {
-  //     const EventServiceInstance = new EventService(EventModel, AdvertisementModel);
-  //     const events = await EventServiceInstance.findRecommendEventList();
-  //     return res.status(200).json(events);
-  //   })
-  // );
+  @ApiOperation({ summary: '추천 공모전 조회(AD)' })
+  @ApiOkResponse({
+    type: EventMainListResponse,
+  })
+  @Get('recommend')
+  async getRecommendEventList(): Promise<EventMainListResponse> {
+    return await this.eventsService.getRecommendEventList();
+  }
 }

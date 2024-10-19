@@ -44,11 +44,4 @@ export class LoginSuccessResponse {
     description: '리프레시 토큰',
   })
   refreshToken: string;
-
-  @ApiProperty({
-    description: '읽지 않은 알림 존재 여부',
-    type: Boolean,
-    example: 'false',
-  })
-  hasUnreadNotice: boolean;
 }

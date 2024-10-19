@@ -69,7 +69,6 @@ export class AuthService {
       likeLanguages,
       accessToken,
       refreshToken,
-      hasUnreadNotice: false,
     };
   }
 

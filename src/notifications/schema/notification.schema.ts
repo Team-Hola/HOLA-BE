@@ -23,6 +23,15 @@ export class Notification {
   title: string;
 
   @ApiProperty({
+    description: '알림 내용',
+    required: false,
+    example: '내용입니다!',
+  })
+  @Prop({ type: String, required: false, default: '' })
+  @IsString()
+  content: string;
+
+  @ApiProperty({
     type: Boolean,
     description: '읽음 여부',
     example: 'false',

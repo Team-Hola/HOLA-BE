@@ -10,6 +10,9 @@ import { LikePostsModule } from '../like-posts/like-posts.module';
 import { ReadPostsModule } from '../read-posts/read-posts.module';
 import { PostsModule } from '../posts/posts.module';
 import { NotificationsModule } from 'src/notifications/notifications.module';
+import { EventsModule } from 'src/events/events.module';
+import { LikeEventsModule } from 'src/like-events/like-events.module';
+import { AdvertisementsModule } from 'src/advertisement/advertisements.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     ReadPostsModule,
     PostsModule,
     NotificationsModule,
+    EventsModule,
+    LikeEventsModule,
+    AdvertisementsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],

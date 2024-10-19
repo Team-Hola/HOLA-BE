@@ -8,6 +8,7 @@ import { EventCreateRequest } from './dto/event-create-request';
 import { GetObjectCommand, GetObjectCommandInput, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { EventRecommendedListResponse } from './dto/event-recommended-list-response';
+import { AdvertisementsService } from 'src/advertisement/advertisements.service';
 
 @Injectable()
 export class EventsService {
@@ -16,6 +17,7 @@ export class EventsService {
   constructor(
     private readonly eventsRepository: EventsRepository,
     private readonly likeEventsService: LikeEventsService,
+    private readonly advertisementsService: AdvertisementsService,
   ) {
     this.s3Client = new S3Client({
       region: process.env.S3_BUCKET_REGION,
@@ -202,44 +204,61 @@ export class EventsService {
     await this.eventsRepository.updateClosedAfterEndDate();
   }
 
-  //   // 추천 이벤트
-  //   async findRecommendEventList() {
-  //     // 광고 진행중인 공모전 조회
-  //     const activeADInEvent = await this.adverisementModel.findActiveADListInEvent();
+  // 추천 이벤트
+  async getRecommendEventList() {
+    // 광고 진행중인 공모전 조회
+    const activeADInEvent = await this.advertisementsService.getActiveEventBanner();
 
-  //     // event 정보만 분리
-  //     const adEventList = activeADInEvent
-  //       .filter((i: any) => {
-  //         return i.event && i.event.length > 0 && i.event[0] !== null && i.event[0] !== undefined;
-  //       })
-  //       .map((i: any) => {
-  //         i.event[0].isAd = true;
-  //         return i.event[0];
-  //       });
+    // event 정보만 분리
+    const adEventList = activeADInEvent
+      .filter((i: any) => {
+        return i.event && i.event.length > 0 && i.event[0] !== null && i.event[0] !== undefined;
+      })
+      .map((i: any) => {
+        i.event[0].isAd = true;
+        return i.event[0];
+      });
 
-  //     // 인기 공모전 조회 시 광고로 조회된 공모전 제외
-  //     const notInEventId = adEventList.map((event: IEventDocument) => {
-  //       return event._id;
-  //     });
+    // 인기 공모전 조회 시 광고로 조회된 공모전 제외
+    const notInEventId = adEventList.map((event) => {
+      return event._id;
+    });
 
-  //     // id를 분리하여 not in으로
-  //     const events = await this.eventsRepository.findRecommendEventList(notInEventId);
-  //     adEventList.push(...events);
+    // id를 분리하여 not in으로
+    const events = await this.eventsRepository.findRecommendedEventList(notInEventId);
+    adEventList.push(...events);
 
-  //     // 마감임박 뱃지 추가
-  //     const today: Date = new Date();
-  //     const result: any = adEventList.map((event: any) => {
-  //       if (!event.isAd || event.isAd !== true) event.isAd = false;
+    // 마감임박 뱃지 추가
+    const today: Date = new Date();
+    const result: any = adEventList.map((event: any) => {
+      if (!event.isAd || event.isAd !== true) event.isAd = false;
 
-  //       event.badge = [];
-  //       if (event.applicationEndDate > today) {
-  //         event.badge.push({
-  //           type: 'deadline',
-  //           name: `${timeForEndDate(event.applicationEndDate)}`,
-  //         });
-  //       }
-  //       return event;
-  //     });
-  //     return result;
-  //   }
+      event.badge = [];
+      if (event.applicationEndDate > today) {
+        event.badge.push({
+          type: 'deadline',
+          name: `${this.timeForEndDate(event.applicationEndDate)}`,
+        });
+      }
+      return event;
+    });
+    return result;
+  }
+
+  timeForEndDate(endDate: Date): string {
+    const today: Date = new Date();
+    // 시간을 제외하고 day로만 계산
+    if (endDate < today) return ``;
+
+    const betweenTime: number = Math.floor((endDate.getTime() - today.getTime()) / 1000 / 60);
+    const betweenTimeHour = Math.floor(betweenTime / 60);
+    if (betweenTimeHour < 24) return `오늘 마감`;
+
+    const betweenTimeDay = Math.ceil(betweenTime / 60 / 24);
+    if (betweenTimeDay < 365) {
+      return `마감 ${betweenTimeDay}일전`;
+    }
+
+    return `마감 ${Math.floor(betweenTimeDay / 365)}년전`;
+  }
 }

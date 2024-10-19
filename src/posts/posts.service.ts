@@ -173,7 +173,7 @@ export class PostsService {
     if (createdAt > daysAgo) badge.push(this.addBadge('new', '🍞따끈따끈 새 글'));
     else if (startDate > today && (startDate.getTime() - today.getTime()) / millisecondDay <= 3)
       badge.push(this.addBadge('deadline', `${this.timeForEndDate(startDate, today)}`));
-    else if (Math.abs(views / Math.ceil((today.getTime() - createdAt.getTime()) / millisecondDay)) >= 60)
+    else if (Math.abs(views / Math.ceil((today.getTime() - createdAt.getTime()) / millisecondDay)) >= 250)
       badge.push(this.addBadge('hot', '💙 인기'));
 
     return badge;
