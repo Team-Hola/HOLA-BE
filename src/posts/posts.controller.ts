@@ -30,6 +30,7 @@ import { CommentListResponse } from './dto/comment-list-response';
 import { CommentCreateRequest } from './dto/comment-create-request';
 import { CommentUpdateRequest } from './dto/comment-update-request';
 import { User } from '../auth/user.decorator';
+import { ParseDatePipe } from 'src/common/pipe/parse-date.pipe';
 
 @ApiTags('posts')
 @Controller('api/posts')
@@ -73,6 +74,19 @@ export class PostsController {
     return {
       lastPage,
     };
+  }
+
+  @ApiOperation({ summary: '최신 글 조회(오픈카톡 데이터 조회용도)' })
+  @ApiBody({
+    schema: {
+      properties: {
+        lastPage: { type: 'numer', example: 15, description: '마지막 페이지' },
+      },
+    },
+  })
+  @Get('latest')
+  async getPostByBetweenDate(@Query('start', ParseDatePipe) start: Date, @Query('end', ParseDatePipe) end: Date) {
+    return await this.postsService.getPostByBetweenDate(start, end);
   }
 
   @ApiOperation({ summary: '모집글 상세 조회' })

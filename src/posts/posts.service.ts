@@ -330,4 +330,9 @@ export class PostsService {
   async deleteCommentBySignOutUser(userId: Types.ObjectId) {
     await this.postsRepository.deleteCommentByAuthor(userId);
   }
+
+  // 기간 사이에 있는 글 조회
+  async getPostByBetweenDate(startDate: Date, endDate: Date) {
+    return await this.postsRepository.findPostByBetweenDate(startDate, endDate);
+  }
 }

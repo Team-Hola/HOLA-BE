@@ -6,9 +6,15 @@ import { Event, EventSchema } from './schema/event.schema';
 import { EventsRepository } from './events.repository';
 import { LikeEventsModule } from 'src/like-events/like-events.module';
 import { JwtModule } from 'src/jwt/jwt.module';
+import { AdvertisementsModule } from 'src/advertisement/advertisements.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }]), JwtModule, LikeEventsModule],
+  imports: [
+    MongooseModule.forFeature([{ name: Event.name, schema: EventSchema }]),
+    JwtModule,
+    LikeEventsModule,
+    AdvertisementsModule,
+  ],
   controllers: [EventsController],
   providers: [EventsService, EventsRepository],
   exports: [EventsService],

@@ -396,4 +396,25 @@ export class PostsRepository {
       { $pull: { comments: { author: userId } } },
     );
   }
+
+  // 기간 사이에 있는 글 조회
+  async findPostByBetweenDate(startDate: Date, endDate: Date): Promise<PostPOJO> {
+    return await this.postModel
+      .find({
+        createdAt: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      })
+      .where('isDeleted')
+      .equals(false)
+      .where('isClosed')
+      .equals(false)
+      .sort('-createdAt')
+      .limit(20)
+      .select(
+        `title views comments likes language isClosed totalLikes startDate endDate type onlineOrOffline contactType recruits expectedPeriod author positions createdAt`,
+      )
+      .lean();
+  }
 }
