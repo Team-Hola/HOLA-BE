@@ -264,3 +264,15 @@ export const userSkillCode = {
 } as const;
 
 export type AdLogType = keyof typeof AdLogCode;
+
+export const UserPositionCode = {
+  FE: '프론트엔드',
+  BE: '백엔드',
+  DE: '디자이너',
+  IOS: 'IOS',
+  AND: '안드로이드',
+  DEVOPS: '데브옵스',
+  PM: 'PM',
+  PD: '기획자',
+  MK: '마케터',
+} as const;

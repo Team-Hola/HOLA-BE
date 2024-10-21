@@ -94,4 +94,9 @@ export class LikePostsRepository {
       postId,
     });
   }
+
+  // 관심 등록 수 집계
+  async countLikePosts() {
+    return this.likePostModel.countDocuments();
+  }
 }

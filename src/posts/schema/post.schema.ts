@@ -31,7 +31,8 @@ export class Post {
   author: Types.ObjectId;
 
   @ApiProperty({
-    type: Array,
+    enum: PostLanguageCode,
+    isArray: true,
     description: '사용언어',
     example: '["java", "javascript"]',
   })

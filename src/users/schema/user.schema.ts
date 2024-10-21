@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { userStatusCode } from 'src/CommonCode';
+import { UserPositionCode, UserWorkExperienceCode, userSkillCode, userStatusCode } from 'src/CommonCode';
 export type UserDocument = HydratedDocument<User>;
 
 //@Schema()
@@ -92,23 +92,24 @@ export class User {
   image: string;
 
   @ApiProperty({
-    type: [String],
-    description: '관심 기술스택',
+    enum: userSkillCode,
+    isArray: true,
+    description: '사용자 기술스택',
     example: '["java", "javascript"]',
-    required: false,
   })
   @Prop([String])
+  @IsEnum(userSkillCode, { each: true })
   @IsArray()
   @IsOptional()
   likeLanguages: string[];
 
   @ApiProperty({
-    description: '직군(프론트엔드, 백엔드, 디자인)',
-    example: 'FE',
-    required: false,
+    enum: UserPositionCode,
+    description: '사용자 포지션',
+    example: 'BE',
   })
-  @Prop({ type: String, default: '' })
-  @IsString()
+  @Prop()
+  @IsEnum(UserPositionCode)
   @IsOptional()
   position: string;
 
@@ -123,13 +124,13 @@ export class User {
   introduce: string;
 
   @ApiProperty({
-    description: '경력(학생, 1년, 2년, 3년)',
-    example: '2',
-    required: false,
+    enum: UserWorkExperienceCode,
+    description: '경력',
+    example: '1',
   })
-  @Prop({ type: String, default: '' })
-  @IsString()
+  @Prop()
   @IsOptional()
+  @IsEnum(UserWorkExperienceCode)
   workExperience: string;
 
   @ApiProperty({

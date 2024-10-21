@@ -335,4 +335,26 @@ export class PostsService {
   async getPostByBetweenDate(startDate: Date, endDate: Date) {
     return await this.postsRepository.findPostByBetweenDate(startDate, endDate);
   }
+
+  // 오늘 총 조회수
+  async getTodayViewCount(today: Date) {
+    return await this.postsRepository.getTodayViewCount(today);
+  }
+
+  // 조건에 따른 게시글 수 집계
+  async countDocument(field: 'createdAt' | 'closeDate' | 'deleteDate', today: Date) {
+    return await this.postsRepository.countDocument(field, today);
+  }
+
+  // 일자별 게시글 현황(일자 / 등록된 글 / 마감된 글 / 삭제된 글)
+  async getDailyPostStats(startDate: Date, endDate: Date) {
+    return await this.postsRepository.getDailyPostStats(startDate, endDate);
+  }
+
+  // 사용자가 선택하는 필드 집계
+  async aggreagteSelectionFields(
+    field: 'type' | 'recruits' | 'onlineOrOffline' | 'expectedPeriod' | 'positions' | 'language',
+  ) {
+    return await this.postsRepository.aggreagteSelectionFields(field);
+  }
 }

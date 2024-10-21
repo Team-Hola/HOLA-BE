@@ -25,4 +25,9 @@ export class LikePostsService {
   async delete(postId: Types.ObjectId, userId: Types.ObjectId) {
     await this.likePostsRepository.delete(postId, userId);
   }
+
+  // 관심 등록 수 집계
+  async countLikePosts() {
+    return await this.likePostsRepository.countLikePosts();
+  }
 }

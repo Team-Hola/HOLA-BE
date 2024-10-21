@@ -106,4 +106,23 @@ export class UsersService {
   async getWrittenPostByUser(userId: Types.ObjectId, offset: number, limit: number) {
     return await this.postsService.getWrittenPostByUser(userId, offset, limit);
   }
+
+  // 사용자 수 집계
+  async countUsers(today: Date | null) {
+    return await this.usersRepository.countUsers(today);
+  }
+
+  // 탈퇴 사용자 수 집계
+  async countSignOutUsers(today: Date | null) {
+    return await this.usersRepository.countSignOutUsers(today);
+  }
+  // 일자별 회원 가입 현황(일자 / 신규 가입자 / 탈퇴자)
+  async aggregateDailySignups(start: Date, end: Date) {
+    return await this.usersRepository.aggregateDailySignups(start, end);
+  }
+
+  // 사용자가 선택하는 필드 집계
+  async aggreagteSelectionFields(field: 'position' | 'workExperience' | 'likeLanguages' | 'status') {
+    return await this.usersRepository.aggreagteSelectionFields(field);
+  }
 }

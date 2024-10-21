@@ -417,4 +417,81 @@ export class PostsRepository {
       )
       .lean();
   }
+
+  // 오늘의 총 조회수
+  async getTodayViewCount(today: Date) {
+    return await this.postModel.aggregate([
+      { $match: { createdAt: { $gte: today } } },
+      { $group: { _id: null, totalView: { $sum: '$views' } } },
+    ]);
+  }
+
+  // 조건에 따른 게시글 조회
+  async countDocument(field: 'createdAt' | 'closeDate' | 'deleteDate', today: Date) {
+    return await this.postModel.countDocuments({ [field]: { $gte: today } });
+  }
+
+  // 일자별 게시글 현황(일자 / 등록된 글 / 마감된 글 / 삭제된 글)
+  async getDailyPostStats(startDate: Date, endDate: Date) {
+    return await this.postModel.aggregate([
+      { $match: { createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+      { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } }, created: { $sum: 1 } } },
+      {
+        $unionWith: {
+          coll: 'posts',
+          pipeline: [
+            { $match: { closeDate: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+            { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$closeDate' } }, closed: { $sum: 1 } } },
+          ],
+        },
+      },
+      {
+        $unionWith: {
+          coll: 'posts',
+          pipeline: [
+            { $match: { deleteDate: { $gte: new Date(startDate), $lte: new Date(endDate) } } },
+            { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$deleteDate' } }, deleted: { $sum: 1 } } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: '$_id',
+          created: { $sum: '$created' },
+          closed: { $sum: '$closed' },
+          deleted: { $sum: '$deleted' },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+  }
+
+  // 사용자가 선택하는 필드 집계
+  async aggreagteSelectionFields(
+    field: 'type' | 'recruits' | 'onlineOrOffline' | 'expectedPeriod' | 'positions' | 'language',
+  ) {
+    return await this.postModel.aggregate([
+      {
+        $unwind: `$${field}`, // 배열을 펼침
+      },
+      {
+        $group: {
+          _id: `$${field}`,
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          [field]: '$_id',
+          count: 1,
+        },
+      },
+      {
+        $sort: {
+          count: -1, // count로 내림차순 정렬
+        },
+      },
+    ]);
+  }
 }

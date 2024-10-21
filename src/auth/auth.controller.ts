@@ -16,6 +16,7 @@ import {
   ApiUnauthorizedResponse,
   refs,
 } from '@nestjs/swagger';
+import { AdminLoginRequest } from './dto/admin-login-request';
 
 @ApiTags('auth')
 @Controller('api/auth')
@@ -30,6 +31,32 @@ export class AuthController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async getToken(@Req() request: Request): Promise<LoginSuccessResponse> {
     return this.authService.getUserByRefreshToken(request.cookies['R_AUTH']);
+  }
+
+  @Post('/login/admin')
+  @ApiOperation({ summary: '어드민 로그인(id, password' })
+  @ApiExtraModels(LoginSuccessResponse)
+  @ApiOkResponse({
+    description: '로그인 성공',
+    schema: {
+      anyOf: refs(LoginSuccessResponse),
+    },
+  })
+  async adminLogin(
+    @Body() dto: AdminLoginRequest,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<LoginSuccessResponse | SignupRequiredResponse> {
+    const { id, password } = dto;
+    const loginResult = await this.authService.adminLogin(id, password);
+    if (loginResult.loginSuccess === true) {
+      response.cookie('R_AUTH', loginResult.refreshToken, {
+        sameSite: 'none',
+        httpOnly: true,
+        secure: true,
+        maxAge: 1000 * 60 * 60 * 24 * 14, // 2 Week
+      });
+    }
+    return loginResult;
   }
 
   @Post('login')

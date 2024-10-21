@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { OauthLoginFactory, OauthLoginPocliy } from './login.factory';
 
 export type OauthGetResponse = {
@@ -19,5 +19,14 @@ export class LoginService {
       throw new BadRequestException(`Invalid oauth parameter`);
     }
     return oAuthResponse;
+  }
+
+  // 어드민 로그인
+  adminLogin(id: string, password: string): string {
+    if (id === process.env.ADMIN_ID && password === process.env.ADMIN_PASSWORD) {
+      return 'admin'; // idToken
+    } else {
+      throw new UnauthorizedException('Id/Password is Invalid');
+    }
   }
 }

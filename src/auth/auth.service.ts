@@ -42,6 +42,12 @@ export class AuthService {
     }
   }
 
+  async adminLogin(id: string, password: string): Promise<LoginSuccessResponse> {
+    const idToken = this.loginService.adminLogin(id, password);
+    const user = await this.userService.getUserByIdToken(idToken);
+    return await this.getLoginSuccessResponse(user);
+  }
+
   async getUserByRefreshToken(refreshToken: string): Promise<LoginSuccessResponse> {
     const { nickName } = this.jwtService.verifyRefreshToken(refreshToken);
     const user: UserPOJO = await this.userService.getUserByNickname(nickName);
