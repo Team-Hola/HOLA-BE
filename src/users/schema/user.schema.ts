@@ -2,15 +2,22 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
-import { UserPositionCode, UserWorkExperienceCode, userSkillCode, userStatusCode } from 'src/CommonCode';
+import { UserPositionCode, UserWorkExperienceCode, userSkillCode, userStatusCode, UserUrlType } from 'src/CommonCode';
 export type UserDocument = HydratedDocument<User>;
 
 //@Schema()
 export class Url {
-  //@Prop()
+  @ApiProperty({ enum: UserUrlType, description: 'url 형식' })
+  @Prop(String)
+  @IsEnum(UserUrlType)
+  @IsString()
   urlType: string;
 
-  //@Prop()
+  @ApiProperty({
+    description: 'URL',
+    example: 'naver.com',
+  })
+  @IsString()
   url: string;
 }
 
